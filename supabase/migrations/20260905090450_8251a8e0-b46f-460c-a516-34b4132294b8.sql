@@ -1,0 +1,9 @@
+INSERT INTO public.products (id, title, price, image_url, description, category, stock, tag, rating, reviews, sort_order, color_variants) VALUES
+  (gen_random_uuid(), 'Aurelius Gold Chronograph', 12500, '/products/p-watch1.jpg', 'Aurelius Gold Chronograph — statement timepiece with gold-tone case and precision movement.', 'Watches', 12, 'Best Seller', 4.9, 214, 1, '[]'::jsonb),
+  (gen_random_uuid(), 'Meridian Steel Classic', 8900, '/products/p-watch2.jpg', 'Meridian Steel Classic — minimalist steel watch for everyday elegance.', 'Watches', 9, 'New Arrival', 4.8, 168, 2, '[]'::jsonb),
+  (gen_random_uuid(), 'Oxford White Dress Shirt', 2500, '/products/p-shirt1.jpg', 'Oxford White Dress Shirt — crisp tailored fit in premium cotton.', 'Shirts', 40, NULL, 4.7, 342, 3, '[]'::jsonb),
+  (gen_random_uuid(), 'Lagoon Linen Casual Shirt', 1999, '/products/p-shirt2.jpg', 'Lagoon Linen Casual Shirt — breathable linen for relaxed sophistication.', 'Shirts', 35, 'New Arrival', 4.6, 189, 4, '[]'::jsonb),
+  (gen_random_uuid(), 'Charcoal Tailored Trousers', 3200, '/products/p-pants1.jpg', 'Charcoal Tailored Trousers — sharp tailored cut with a refined drape.', 'Pants', 22, NULL, 4.8, 256, 5, '[]'::jsonb),
+  (gen_random_uuid(), 'Midnight Slim Chinos', 2499, '/products/p-pants2.jpg', 'Midnight Slim Chinos — versatile slim-fit chinos in deep midnight.', 'Pants', 28, NULL, 4.5, 141, 6, '[]'::jsonb),
+  (gen_random_uuid(), 'Onyx Leather Bifold Wallet', 1499, '/products/p-wallet.jpg', 'Onyx Leather Bifold Wallet — slim full-grain leather wallet.', 'Accessories', 50, 'Best Seller', 4.9, 402, 7, '[]'::jsonb),
+  (gen_random_uuid(), 'Regent Silk Tie & Gold Clip', 1250, '/products/p-tie.jpg', 'Regent Silk Tie & Gold Clip — hand-finished silk tie with a gold-tone clip.', 'Accessories', 33, NULL, 4.7, 98, 8, '[]'::jsonb);

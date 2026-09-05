@@ -15,7 +15,11 @@ export function ProductGrid({ products, settings = {} }: ProductGridProps) {
   const [order, setOrder] = useState<{ product: Product; color: string } | null>(null);
 
   const visible =
-    filter === "All" ? products : products.filter((p) => p.category === filter);
+    filter === "All"
+      ? products
+      : products.filter(
+          (p) => p.category?.toLowerCase().trim() === filter.toLowerCase().trim(),
+        );
 
   return (
     <section id="shop" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
