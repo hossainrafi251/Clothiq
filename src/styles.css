@@ -1,0 +1,135 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --font-display: var(--font-display-family);
+  --font-body: var(--font-body-family);
+}
+
+:root {
+  --radius: 0.5rem;
+  --font-display-family: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  --background: oklch(0.19 0.012 240); /* #1A1E24 charcoal slate */
+  --foreground: oklch(0.95 0.005 220);
+  --card: oklch(0.225 0.014 240);
+  --card-foreground: oklch(0.95 0.005 220);
+  --popover: oklch(0.21 0.013 240);
+  --popover-foreground: oklch(0.95 0.005 220);
+  --primary: oklch(0.85 0.13 200); /* vibrant teal #00E5FF zone */
+  --primary-foreground: oklch(0.17 0.02 230);
+  --secondary: oklch(0.26 0.02 235);
+  --secondary-foreground: oklch(0.92 0.01 220);
+  --muted: oklch(0.26 0.02 235);
+  --muted-foreground: oklch(0.68 0.015 230);
+  --accent: oklch(0.55 0.09 205); /* deep teal #008B9B zone */
+  --accent-foreground: oklch(0.96 0.01 220);
+  --gold: oklch(0.75 0.12 85); /* metallic gold #D4AF37 */
+  --gold-foreground: oklch(0.19 0.02 240);
+  --destructive: oklch(0.6 0.2 25);
+  --destructive-foreground: oklch(0.96 0.01 220);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.85 0.13 200);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-body-family);
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display-family);
+  }
+}
+
+@utility text-gradient-teal {
+  background: linear-gradient(120deg, oklch(0.55 0.09 205), oklch(0.85 0.13 200));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility text-gradient-gold {
+  background: linear-gradient(120deg, oklch(0.68 0.11 85), oklch(0.85 0.12 90));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility bg-gradient-teal {
+  background-image: linear-gradient(135deg, oklch(0.55 0.09 205), oklch(0.85 0.13 200));
+}
+
+@utility card-sheen {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s;
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px -20px oklch(0.85 0.13 200 / 25%);
+  }
+}
+
+@utility gold-underline {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    height: 1.5px;
+    width: 0;
+    background: var(--color-gold);
+    transition: width 0.3s ease;
+  }
+  &:hover::after {
+    width: 100%;
+  }
+}
+
+@keyframes review-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@utility review-track {
+  display: flex;
+  width: max-content;
+  gap: 1.25rem;
+  animation: review-marquee 40s linear infinite;
+}
