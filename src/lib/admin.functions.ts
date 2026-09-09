@@ -171,7 +171,9 @@ export const adminSaveProduct = createServerFn({ method: "POST" })
     const payload = { ...fields, updated_at: new Date().toISOString() };
     const { error } = id
       ? await sb.from("products").update(payload).eq("id", id)
-      : await sb.from("products").insert(payload);
+      : await sb
+          .from("products")
+          .insert({ ...payload, slug: slugifyCategory(fields.title) || "product" });
     if (error) throw new Error(error.message);
     return granted;
   });
