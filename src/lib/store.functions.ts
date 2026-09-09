@@ -62,12 +62,80 @@ function publicClient() {
   });
 }
 
+const PRODUCT_COLUMNS =
+  "id,slug,title,price,image_url,description,category,stock,tag,rating,reviews,sort_order,color_variants";
+
+function normalizeProduct(p: Record<string, unknown>): DbProduct {
+  return {
+    ...(p as unknown as DbProduct),
+    price: Number(p["price"]),
+    color_variants: parseVariants(p["color_variants"]),
+  };
+}
+
+async function loadSettings(sb: ReturnType<typeof publicClient>): Promise<SiteSettings> {
+  const { data } = await sb.from("site_settings").select("key,value");
+  const map: SiteSettings = {};
+  for (const row of (data ?? []) as { key: string; value: string }[]) map[row.key] = row.value;
+  return map;
+}
+
+/** One product plus store settings, looked up by its permanent URL slug. */
+export const getProductPage = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) =>
+    z.object({ slug: z.string().trim().min(1).max(200) }).parse(input),
+  )
+  .handler(async ({ data }) => {
+    const sb = publicClient();
+    const [{ data: product }, settings] = await Promise.all([
+      sb.from("products").select(PRODUCT_COLUMNS).eq("slug", data.slug).maybeSingle(),
+      loadSettings(sb),
+    ]);
+    if (!product) return { product: null, related: [], settings };
+
+    const row = normalizeProduct(product as Record<string, unknown>);
+    const { data: related } = await sb
+      .from("products")
+      .select(PRODUCT_COLUMNS)
+      .eq("category", row.category)
+      .neq("slug", row.slug)
+      .order("sort_order", { ascending: true })
+      .limit(4);
+
+    return {
+      product: row,
+      related: ((related ?? []) as Record<string, unknown>[]).map(normalizeProduct),
+      settings,
+    };
+  });
+
+/** All products in one category, looked up by the category name. */
+export const getCategoryPage = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) =>
+    z.object({ category: z.string().trim().min(1).max(60) }).parse(input),
+  )
+  .handler(async ({ data }) => {
+    const sb = publicClient();
+    const [{ data: products }, settings] = await Promise.all([
+      sb
+        .from("products")
+        .select(PRODUCT_COLUMNS)
+        .ilike("category", data.category)
+        .order("sort_order", { ascending: true }),
+      loadSettings(sb),
+    ]);
+    return {
+      products: ((products ?? []) as Record<string, unknown>[]).map(normalizeProduct),
+      settings,
+    };
+  });
+
 export const getStorefront = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
   const [{ data: products }, { data: settings }] = await Promise.all([
     sb
       .from("products")
-      .select("id,title,price,image_url,description,category,stock,tag,rating,reviews,sort_order,color_variants")
+      .select(PRODUCT_COLUMNS)
       .order("sort_order", { ascending: true }),
     sb.from("site_settings").select("key,value"),
   ]);
