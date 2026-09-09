@@ -141,6 +141,17 @@ export const adminUpdateOrderStatus = createServerFn({ method: "POST" })
     return granted;
   });
 
+export const adminDeleteOrder = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data }) => {
+    const user = await currentUser();
+    if (!user?.isAdmin) return denied;
+    const sb = await admin();
+    const { error } = await sb.from("orders").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return granted;
+  });
+
 const productSchema = z.object({
   id: z.string().uuid().optional(),
   title: z.string().trim().min(1).max(200),
