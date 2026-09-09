@@ -23,7 +23,7 @@ export function ProductCard({ product, onOrder }: Props) {
   return (
     <article className="card-sheen group flex flex-col overflow-hidden rounded-2xl border border-border bg-card">
       <div className="relative overflow-hidden">
-        <Link to={`/product/${product.id}`}>
+        <Link={`/product/${product.id}`}
           <img
             key={shownImage}
             src={shownImage}
