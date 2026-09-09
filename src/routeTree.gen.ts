@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as CategoryCategoryRouteImport } from './routes/category.$category'
+import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as ApiPublicImgKeyRouteImport } from './routes/api/public/img/$key'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +25,16 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategoryCategoryRoute = CategoryCategoryRouteImport.update({
+  id: '/category/$category',
+  path: '/category/$category',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductSlugRoute = ProductSlugRouteImport.update({
+  id: '/product/$slug',
+  path: '/product/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicImgKeyRoute = ApiPublicImgKeyRouteImport.update({
   id: '/api/public/img/$key',
   path: '/api/public/img/$key',
@@ -32,30 +44,54 @@ const ApiPublicImgKeyRoute = ApiPublicImgKeyRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/category/$category': typeof CategoryCategoryRoute
+  '/product/$slug': typeof ProductSlugRoute
   '/api/public/img/$key': typeof ApiPublicImgKeyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/category/$category': typeof CategoryCategoryRoute
+  '/product/$slug': typeof ProductSlugRoute
   '/api/public/img/$key': typeof ApiPublicImgKeyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/category/$category': typeof CategoryCategoryRoute
+  '/product/$slug': typeof ProductSlugRoute
   '/api/public/img/$key': typeof ApiPublicImgKeyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/api/public/img/$key'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/category/$category'
+    | '/product/$slug'
+    | '/api/public/img/$key'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/api/public/img/$key'
-  id: '__root__' | '/' | '/admin' | '/api/public/img/$key'
+  to:
+    | '/'
+    | '/admin'
+    | '/category/$category'
+    | '/product/$slug'
+    | '/api/public/img/$key'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/category/$category'
+    | '/product/$slug'
+    | '/api/public/img/$key'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  CategoryCategoryRoute: typeof CategoryCategoryRoute
+  ProductSlugRoute: typeof ProductSlugRoute
   ApiPublicImgKeyRoute: typeof ApiPublicImgKeyRoute
 }
 
@@ -75,6 +111,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/category/$category': {
+      id: '/category/$category'
+      path: '/category/$category'
+      fullPath: '/category/$category'
+      preLoaderRoute: typeof CategoryCategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/product/$slug': {
+      id: '/product/$slug'
+      path: '/product/$slug'
+      fullPath: '/product/$slug'
+      preLoaderRoute: typeof ProductSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/img/$key': {
       id: '/api/public/img/$key'
       path: '/api/public/img/$key'
@@ -88,6 +138,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  CategoryCategoryRoute: CategoryCategoryRoute,
+  ProductSlugRoute: ProductSlugRoute,
   ApiPublicImgKeyRoute: ApiPublicImgKeyRoute,
 }
 export const routeTree = rootRouteImport
