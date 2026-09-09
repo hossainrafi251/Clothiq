@@ -49,7 +49,9 @@ export function ProductCard({ product, onOrder }: Props) {
 
       <div className="flex flex-1 flex-col p-5">
         <p className="text-[11px] font-semibold tracking-[0.2em] text-accent uppercase">{product.category}</p>
-        <h3 className="font-display mt-1.5 text-base leading-snug font-bold">{product.name}</h3>
+        <Link to={`/product/${product.id}`}>
+          <h3 className="font-display mt-1.5 text-base leading-snug font-bold transition-colors hover:text-gold">{product.name}</h3>
+        </Link>
         <div className="mt-2 flex items-center gap-1.5">
           <div className="flex">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -127,6 +129,3 @@ export function ProductCard({ product, onOrder }: Props) {
           </div>
         </div>
       </div>
-    </article>
-  );
-}
