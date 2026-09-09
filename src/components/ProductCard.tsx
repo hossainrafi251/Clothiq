@@ -1,4 +1,5 @@
 import { Heart, ShoppingBag, Star, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useCart } from "../lib/cart";
 import { bdt } from "../lib/currency";
@@ -45,9 +46,7 @@ export function ProductCard({ product, onOrder }: Props) {
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <p className="text-[11px] font-semibold tracking-[0.2em] text-accent uppercase">
-          {product.category}
-        </p>
+        <p className="text-[11px] font-semibold tracking-[0.2em] text-accent uppercase">{product.category}</p>
         <h3 className="font-display mt-1.5 text-base leading-snug font-bold">{product.name}</h3>
         <div className="mt-2 flex items-center gap-1.5">
           <div className="flex">
