@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star, Zap, ShoppingBag } from "lucide-react";
 import { CartProvider, useCart } from "../lib/cart";
 import { Header } from "../components/Header";
@@ -9,7 +9,9 @@ import { OrderModal } from "../components/OrderModal";
 import { ProductCard } from "../components/ProductCard";
 import { bdt } from "../lib/currency";
 import { slugifyCategory } from "../lib/categories";
+import { trackMetaEvent } from "../lib/meta-pixel";
 import { getProductPage, toProduct } from "../lib/store.functions";
+import type { DbProduct } from "../lib/store.functions";
 import type { Product } from "../lib/products";
 
 export const Route = createFileRoute("/product/$slug")({
