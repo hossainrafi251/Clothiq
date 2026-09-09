@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import { slugifyCategory } from "./categories";
 
 type AuthResult = { userId: string; isAdmin: boolean } | null;
 
