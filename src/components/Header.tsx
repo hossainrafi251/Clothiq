@@ -17,23 +17,25 @@ export function Header() {
       <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-md">
         <div className="bg-gradient-teal h-1 w-full" />
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <a href="#top" className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-3">
             <img
               src={logoMark.url}
               alt="CLOTHIQ — Own Your Vibe"
               className="h-11 w-auto rounded-sm object-cover sm:h-12"
             />
-          </a>
+          </Link>
 
           <nav className="hidden items-center gap-7 lg:flex">
             {NAV_LINKS.map((link) => (
-              <a
+              <Link
                 key={link.label}
-                href={link.href}
+                to="/category/$category"
+                params={{ category: link.slug }}
+                activeProps={{ className: "text-foreground" }}
                 className="gold-underline text-sm font-medium tracking-wide text-muted-foreground transition-colors hover:text-foreground"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
