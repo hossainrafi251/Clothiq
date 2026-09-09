@@ -15,6 +15,7 @@ export function parseVariants(raw: unknown): ColorVariant[] {
 
 export interface DbProduct {
   id: string;
+  slug: string;
   title: string;
   price: number;
   image_url: string;
