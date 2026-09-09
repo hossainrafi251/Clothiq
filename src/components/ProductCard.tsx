@@ -1,5 +1,5 @@
 import { Heart, ShoppingBag, Star, Zap } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useCart } from "@/lib/cart";
 import { bdt } from "@/lib/currency";
@@ -11,8 +11,9 @@ interface Props {
   onOrder: (product: Product, color: string) => void;
 }
 
-export default function ProductCard({ product, onOrder }: Props) {
+export function ProductCard({ product, onOrder }: Props) {
   const { addItem } = useCart();
+  const slug = product.slug ?? product.id;
   const variants = (product.colorVariants ?? []).filter((v) => v.name);
   const [selected, setSelected] = useState(variants[0]?.name ?? "");
 
@@ -22,7 +23,7 @@ export default function ProductCard({ product, onOrder }: Props) {
   return (
     <article className="card-sheen group flex flex-col overflow-hidden rounded-2xl border border-border bg-card">
       <div className="relative overflow-hidden">
-        <Link to={`/product/${product.id}`}>
+        <Link to="/product/$slug" params={{ slug }}>
           <img
             key={shownImage}
             src={shownImage}
@@ -48,7 +49,7 @@ export default function ProductCard({ product, onOrder }: Props) {
 
       <div className="flex flex-1 flex-col p-5">
         <p className="text-[11px] font-semibold tracking-[0.2em] text-accent uppercase">{product.category}</p>
-        <Link to={`/product/${product.id}`}>
+        <Link to="/product/$slug" params={{ slug }}>
           <h3 className="font-display mt-1.5 text-base leading-snug font-bold transition-colors hover:text-gold">
             {product.name}
           </h3>
