@@ -23,15 +23,17 @@ export function ProductCard({ product, onOrder }: Props) {
   return (
     <article className="card-sheen group flex flex-col overflow-hidden rounded-2xl border border-border bg-card">
       <div className="relative overflow-hidden">
-        <img
-          key={shownImage}
-          src={shownImage}
-          alt={activeVariant ? `${product.name} — ${activeVariant.name}` : product.name}
-          loading="lazy"
-          width={800}
-          height={800}
-          className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-105"
-        />
+        <Link to={`/product/${product.id}`}>
+          <img
+            key={shownImage}
+            src={shownImage}
+            alt={activeVariant ? `${product.name} — ${activeVariant.name}` : product.name}
+            loading="lazy"
+            width={800}
+            height={800}
+            className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        </Link>
         {product.tag && (
           <span className="absolute top-3 left-3 rounded-full bg-gold px-3 py-1 text-[10px] font-bold tracking-widest text-gold-foreground uppercase">
             {product.tag}
