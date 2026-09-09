@@ -222,6 +222,7 @@ function AdminPage() {
   const getExtras = useServerFn(adminGetExtras);
   const status = useServerFn(adminStatus);
   const setStatus = useServerFn(adminUpdateOrderStatus);
+  const deleteOrder = useServerFn(adminDeleteOrder);
   const saveProduct = useServerFn(adminSaveProduct);
   const deleteProduct = useServerFn(adminDeleteProduct);
   const saveSettings = useServerFn(adminSaveSettings);
