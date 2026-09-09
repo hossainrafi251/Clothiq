@@ -19,6 +19,11 @@ const CATEGORIES = [
     description: "Wallets, ties & belts",
     image: catAccessories,
   },
+  {
+    name: "T-Shirts",
+    description: "Premium casual tees",
+    image: catShirts,
+  },
 ];
 
 export function Categories() {
@@ -26,9 +31,7 @@ export function Categories() {
     <section id="categories" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
       <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold tracking-[0.3em] text-gold uppercase">
-            Curated For You
-          </p>
+          <p className="text-xs font-semibold tracking-[0.3em] text-gold uppercase">Curated For You</p>
           <h2 className="font-display mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
             Shop by <span className="text-gradient-teal">Category</span>
           </h2>
