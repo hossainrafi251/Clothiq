@@ -1,10 +1,10 @@
 import { Heart, ShoppingBag, Star, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useCart } from "../lib/cart";
-import { bdt } from "../lib/currency";
-import type { Product } from "../lib/products";
-import { trackMetaEvent } from "../lib/meta-pixel";
+import { useCart } from "@/lib/cart";
+import { bdt } from "@/lib/currency";
+import type { Product } from "@/lib/products";
+import { trackMetaEvent } from "@/lib/meta-pixel";
 
 interface Props {
   product: Product;
