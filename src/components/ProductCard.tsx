@@ -26,7 +26,7 @@ export function ProductCard({ product, onOrder }: Props) {
           <img
             key={shownImage}
             src={shownImage}
-            alt={activeVariant ? `${product.name} — ${activeVariant.name}` : product.name}
+            alt={product.name}
             loading="lazy"
             width={800}
             height={800}
