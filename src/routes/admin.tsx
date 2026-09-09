@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   adminDeleteCoupon,
   adminDeleteIncomplete,
+  adminDeleteOrder,
   adminDeleteProduct,
   adminDeleteReview,
   adminGetData,
@@ -221,6 +222,7 @@ function AdminPage() {
   const getExtras = useServerFn(adminGetExtras);
   const status = useServerFn(adminStatus);
   const setStatus = useServerFn(adminUpdateOrderStatus);
+  const deleteOrder = useServerFn(adminDeleteOrder);
   const saveProduct = useServerFn(adminSaveProduct);
   const deleteProduct = useServerFn(adminDeleteProduct);
   const saveSettings = useServerFn(adminSaveSettings);
@@ -594,34 +596,53 @@ function AdminPage() {
                     </div>
                   </div>
 
-                  <div className="text-right">
-                    <p className="font-display text-lg font-bold text-gold">
-                      {bdt(Number(o.total))}
-                    </p>
-                    <select
-                      value={o.status}
-                      onChange={async (e) => {
-                        const next = e.target.value as (typeof STATUSES)[number];
+                  <div className="flex flex-col items-end gap-3">
+                    <div className="text-right">
+                      <p className="font-display text-lg font-bold text-gold">
+                        {bdt(Number(o.total))}
+                      </p>
+                      <select
+                        value={o.status}
+                        onChange={async (e) => {
+                          const next = e.target.value as (typeof STATUSES)[number];
+                          try {
+                            const result = await setStatus({ data: { id: o.id, status: next } });
+                            if (!result.ok) return expired();
+                            setOrders((prev) =>
+                              prev.map((x) => (x.id === o.id ? { ...x, status: next } : x)),
+                            );
+                            toast.success("Order status updated.");
+                          } catch (error) {
+                            console.error(error);
+                            toast.error("Could not update the order.");
+                          }
+                        }}
+                        className="mt-2 rounded-lg border border-border bg-background px-3 py-2 text-xs"
+                      >
+                        {STATUSES.map((s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        if (!window.confirm("Are you sure you want to delete this order?")) return;
                         try {
-                          const result = await setStatus({ data: { id: o.id, status: next } });
+                          const result = await deleteOrder({ data: { id: o.id } });
                           if (!result.ok) return expired();
-                          setOrders((prev) =>
-                            prev.map((x) => (x.id === o.id ? { ...x, status: next } : x)),
-                          );
-                          toast.success("Order status updated.");
+                          setOrders((prev) => prev.filter((x) => x.id !== o.id));
+                          toast.success("Order deleted.");
                         } catch (error) {
                           console.error(error);
-                          toast.error("Could not update the order.");
+                          toast.error("Could not delete the order.");
                         }
                       }}
-                      className="mt-2 rounded-lg border border-border bg-background px-3 py-2 text-xs"
+                      className="rounded-full border border-border px-3 py-1 text-[11px] font-bold uppercase hover:text-destructive"
                     >
-                      {STATUSES.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))}
-                    </select>
+                      Delete
+                    </button>
                   </div>
                 </div>
               </article>
