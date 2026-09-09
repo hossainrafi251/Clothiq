@@ -1,16 +1,12 @@
 import { Heart, Menu, Search, ShoppingBag, X } from "lucide-react";
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import logoMark from "../assets/clothiq-mark.jpg.asset.json";
 import { useCart } from "../lib/cart";
+import { CATEGORIES } from "../lib/categories";
 import { CartDrawer } from "./CartDrawer";
 
-const NAV_LINKS = [
-  { label: "Men's Clothing", href: "#shop" },
-  { label: "Accessories", href: "#categories" },
-  { label: "Watches", href: "#shop" },
-  { label: "Best Sellers", href: "#shop" },
-  { label: "New Arrivals", href: "#shop" },
-];
+const NAV_LINKS = CATEGORIES.map((c) => ({ label: c.name, slug: c.slug }));
 
 export function Header() {
   const { count, setOpen } = useCart();
@@ -21,23 +17,25 @@ export function Header() {
       <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-md">
         <div className="bg-gradient-teal h-1 w-full" />
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <a href="#top" className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-3">
             <img
               src={logoMark.url}
               alt="CLOTHIQ — Own Your Vibe"
               className="h-11 w-auto rounded-sm object-cover sm:h-12"
             />
-          </a>
+          </Link>
 
           <nav className="hidden items-center gap-7 lg:flex">
             {NAV_LINKS.map((link) => (
-              <a
+              <Link
                 key={link.label}
-                href={link.href}
+                to="/category/$category"
+                params={{ category: link.slug }}
+                activeProps={{ className: "text-foreground" }}
                 className="gold-underline text-sm font-medium tracking-wide text-muted-foreground transition-colors hover:text-foreground"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -80,14 +78,15 @@ export function Header() {
           <nav className="border-t border-border px-4 py-4 lg:hidden">
             <div className="flex flex-col gap-1">
               {NAV_LINKS.map((link) => (
-                <a
+                <Link
                   key={link.label}
-                  href={link.href}
+                  to="/category/$category"
+                  params={{ category: link.slug }}
                   onClick={() => setMobileOpen(false)}
                   className="rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
             </div>
           </nav>
