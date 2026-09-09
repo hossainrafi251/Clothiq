@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star, Zap, ShoppingBag } from "lucide-react";
 import { CartProvider, useCart } from "../lib/cart";
 import { Header } from "../components/Header";
@@ -9,7 +9,9 @@ import { OrderModal } from "../components/OrderModal";
 import { ProductCard } from "../components/ProductCard";
 import { bdt } from "../lib/currency";
 import { slugifyCategory } from "../lib/categories";
+import { trackMetaEvent } from "../lib/meta-pixel";
 import { getProductPage, toProduct } from "../lib/store.functions";
+import type { DbProduct } from "../lib/store.functions";
 import type { Product } from "../lib/products";
 
 export const Route = createFileRoute("/product/$slug")({
@@ -59,6 +61,10 @@ function ProductPage() {
     <CartProvider>
       <div className="min-h-screen bg-background text-foreground antialiased">
         <MetaTracker pixelId={settings["meta_pixel_id"] ?? ""} />
+        <ProductViewContent
+          product={product}
+          pixelId={settings["meta_pixel_id"] ?? ""}
+        />
         <Header />
         <main>
           <ProductDetail product={toProduct(product)} settings={settings} />
@@ -77,6 +83,20 @@ function ProductPage() {
       </div>
     </CartProvider>
   );
+}
+
+/** Fires the Meta `ViewContent` standard event for the product being viewed, so
+ *  Meta Ads can attribute and optimize conversions for traffic landing here. */
+function ProductViewContent({ product, pixelId }: { product: DbProduct; pixelId: string }) {
+  useEffect(() => {
+    if (!pixelId) return;
+    trackMetaEvent("ViewContent", {
+      contentIds: [product.id],
+      contentName: product.title,
+      value: Number(product.price),
+    });
+  }, [pixelId, product.id, product.title, product.price]);
+  return null;
 }
 
 function RelatedCard({ product, settings }: { product: Product; settings: Record<string, string> }) {
