@@ -34,6 +34,7 @@ export type SiteSettings = Record<string, string>;
 export function toProduct(p: DbProduct): Product {
   return {
     id: p.id,
+    slug: p.slug,
     name: p.title,
     category: p.category,
     price: Number(p.price),
