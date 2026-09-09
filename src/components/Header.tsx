@@ -1,16 +1,12 @@
 import { Heart, Menu, Search, ShoppingBag, X } from "lucide-react";
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import logoMark from "../assets/clothiq-mark.jpg.asset.json";
 import { useCart } from "../lib/cart";
+import { CATEGORIES } from "../lib/categories";
 import { CartDrawer } from "./CartDrawer";
 
-const NAV_LINKS = [
-  { label: "Men's Clothing", href: "#shop" },
-  { label: "Accessories", href: "#categories" },
-  { label: "Watches", href: "#shop" },
-  { label: "Best Sellers", href: "#shop" },
-  { label: "New Arrivals", href: "#shop" },
-];
+const NAV_LINKS = CATEGORIES.map((c) => ({ label: c.name, slug: c.slug }));
 
 export function Header() {
   const { count, setOpen } = useCart();

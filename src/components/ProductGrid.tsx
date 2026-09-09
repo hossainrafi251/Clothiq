@@ -3,7 +3,7 @@ import { OrderModal } from "./OrderModal";
 import { ProductCard } from "./ProductCard";
 import type { Product } from "../lib/products";
 
-const FILTERS = ["All", "Watches", "Shirts", "Pants", "Accessories"];
+const FILTERS = ["All", "Watches", "Shirts", "T-Shirts", "Pants", "Accessories"];
 
 interface ProductGridProps {
   products: Product[];
