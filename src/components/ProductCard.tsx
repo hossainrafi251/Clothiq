@@ -11,7 +11,6 @@ interface Props {
   onOrder: (product: Product, color: string) => void;
 }
 
-/** Product card with dynamic colour swatches that swap the shown image. */
 export function ProductCard({ product, onOrder }: Props) {
   const { addItem } = useCart();
   const variants = (product.colorVariants ?? []).filter((v) => v.name);
@@ -50,7 +49,9 @@ export function ProductCard({ product, onOrder }: Props) {
       <div className="flex flex-1 flex-col p-5">
         <p className="text-[11px] font-semibold tracking-[0.2em] text-accent uppercase">{product.category}</p>
         <Link to={`/product/${product.id}`}>
-          <h3 className="font-display mt-1.5 text-base leading-snug font-bold transition-colors hover:text-gold">{product.name}</h3>
+          <h3 className="font-display mt-1.5 text-base leading-snug font-bold transition-colors hover:text-gold">
+            {product.name}
+          </h3>
         </Link>
         <div className="mt-2 flex items-center gap-1.5">
           <div className="flex">
@@ -129,3 +130,6 @@ export function ProductCard({ product, onOrder }: Props) {
           </div>
         </div>
       </div>
+    </article>
+  );
+}
