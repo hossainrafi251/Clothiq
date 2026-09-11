@@ -12,6 +12,28 @@ const capiSchema = z.object({
   currency: z.string().trim().max(8).optional(),
   contentIds: z.array(z.string().trim().max(80)).max(50).optional(),
   contentName: z.string().trim().max(200).optional(),
+  contents: z
+    .array(
+      z.object({
+        id: z.string().trim().max(80),
+        quantity: z.number().int().min(1).max(1000),
+        itemPrice: z.number().min(0).max(10_000_000),
+      }),
+    )
+    .max(50)
+    .optional(),
+  numItems: z.number().int().min(0).max(10_000).optional(),
+  orderId: z.string().trim().max(80).optional(),
+  userData: z
+    .object({
+      email: z.string().trim().max(200).optional(),
+      phone: z.string().trim().max(30).optional(),
+      firstName: z.string().trim().max(100).optional(),
+      lastName: z.string().trim().max(100).optional(),
+      city: z.string().trim().max(100).optional(),
+      country: z.string().trim().max(60).optional(),
+    })
+    .optional(),
 });
 
 async function sha256(value: string): Promise<string> {
@@ -22,9 +44,19 @@ async function sha256(value: string): Promise<string> {
     .join("");
 }
 
+function normalizePhone(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  if (!digits) return "";
+  if (digits.startsWith("880")) return digits;
+  if (digits.startsWith("0")) return `880${digits.slice(1)}`;
+  if (digits.startsWith("1")) return `880${digits}`;
+  return digits;
+}
+
 /**
  * Server-side Meta Conversions API event. Shares its event_id with the browser
- * pixel event so Meta deduplicates the two copies.
+ * pixel event so Meta deduplicates the two copies. Customer identifiers are
+ * SHA-256 hashed before they leave the server (Advanced Matching).
  */
 export const sendMetaEvent = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => capiSchema.parse(input))
@@ -45,11 +77,34 @@ export const sendMetaEvent = createServerFn({ method: "POST" })
         req?.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
         undefined;
       const userAgent = req?.headers.get("user-agent") ?? undefined;
+      const cookies = req?.headers.get("cookie") ?? "";
+      const readCookie = (name: string) =>
+        cookies
+          .split(";")
+          .map((c) => c.trim())
+          .find((c) => c.startsWith(`${name}=`))
+          ?.slice(name.length + 1);
 
       const userData: Record<string, unknown> = {};
       if (ip) userData["client_ip_address"] = ip;
       if (userAgent) userData["client_user_agent"] = userAgent;
-      if (ip && userAgent) userData["external_id"] = await sha256(`${ip}|${userAgent}`);
+
+      const fbp = readCookie("_fbp");
+      const fbc = readCookie("_fbc");
+      if (fbp) userData["fbp"] = fbp;
+      if (fbc) userData["fbc"] = fbc;
+
+      const u = data.userData;
+      if (u?.email) userData["em"] = [await sha256(u.email)];
+      const phone = u?.phone ? normalizePhone(u.phone) : "";
+      if (phone) userData["ph"] = [await sha256(phone)];
+      if (u?.firstName) userData["fn"] = [await sha256(u.firstName)];
+      if (u?.lastName) userData["ln"] = [await sha256(u.lastName)];
+      if (u?.city) userData["ct"] = [await sha256(u.city.replace(/\s+/g, ""))];
+      if (u?.country) userData["country"] = [await sha256(u.country)];
+
+      const externalSeed = phone || u?.email || (ip && userAgent ? `${ip}|${userAgent}` : "");
+      if (externalSeed) userData["external_id"] = [await sha256(externalSeed)];
 
       const payload: Record<string, unknown> = {
         data: [
@@ -65,6 +120,18 @@ export const sendMetaEvent = createServerFn({ method: "POST" })
               currency: data.currency ?? "BDT",
               ...(data.contentIds ? { content_ids: data.contentIds, content_type: "product" } : {}),
               ...(data.contentName ? { content_name: data.contentName } : {}),
+              ...(data.contents
+                ? {
+                    content_type: "product",
+                    contents: data.contents.map((c) => ({
+                      id: c.id,
+                      quantity: c.quantity,
+                      item_price: c.itemPrice,
+                    })),
+                  }
+                : {}),
+              ...(data.numItems !== undefined ? { num_items: data.numItems } : {}),
+              ...(data.orderId ? { order_id: data.orderId } : {}),
             },
           },
         ],
