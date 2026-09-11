@@ -111,10 +111,22 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
       });
       state.current.placed = true;
       setPlaced(true);
+      const nameParts = fullName.trim().split(/\s+/);
       trackMetaEvent("Purchase", {
         value: grandTotal,
+        currency: "BDT",
         contentIds: [product.id],
         contentName: product.name,
+        contents: [{ id: product.id, quantity: qty, itemPrice: product.price }],
+        numItems: qty,
+        userData: {
+          ...(email.trim() ? { email: email.trim() } : {}),
+          phone: phone.trim(),
+          firstName: nameParts[0] ?? "",
+          ...(nameParts.length > 1 ? { lastName: nameParts[nameParts.length - 1] ?? "" } : {}),
+          city: district,
+          country: "bd",
+        },
       });
     } catch {
       setError("We couldn't place your order. Please try again.");
