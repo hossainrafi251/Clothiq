@@ -5,7 +5,7 @@ import type { Product } from "../lib/products";
 import { bdt, DELIVERY_INSIDE_DHAKA, DELIVERY_OUTSIDE_DHAKA } from "../lib/currency";
 import { DISTRICTS, DISTRICT_NAMES } from "../lib/bd-locations";
 import { placeOrder, trackIncompleteCheckout } from "../lib/store.functions";
-import { trackMetaEvent } from "../lib/meta-pixel";
+import { setMetaUserData, trackMetaEvent } from "../lib/meta-pixel";
 
 const DEFAULT_SIZES = ["S", "M", "L", "XL"];
 const DEFAULT_COLORS = ["Black", "White", "Teal", "Charcoal"];
@@ -31,6 +31,7 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
   const [qty, setQty] = useState(1);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [district, setDistrict] = useState("");
   const [thana, setThana] = useState("");
   const [address, setAddress] = useState("");
