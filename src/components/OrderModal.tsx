@@ -57,9 +57,12 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
 
   useEffect(() => {
     trackMetaEvent("InitiateCheckout", {
-      value: product.price,
+      value: product.price * qty,
+      currency: "BDT",
       contentIds: [product.id],
       contentName: product.name,
+      contents: [{ id: product.id, quantity: qty, itemPrice: product.price }],
+      numItems: qty,
     });
     return () => {
       const s = state.current;
