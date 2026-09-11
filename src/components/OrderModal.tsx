@@ -5,7 +5,7 @@ import type { Product } from "../lib/products";
 import { bdt, DELIVERY_INSIDE_DHAKA, DELIVERY_OUTSIDE_DHAKA } from "../lib/currency";
 import { DISTRICTS, DISTRICT_NAMES } from "../lib/bd-locations";
 import { placeOrder, trackIncompleteCheckout } from "../lib/store.functions";
-import { trackMetaEvent } from "../lib/meta-pixel";
+import { setMetaUserData, trackMetaEvent } from "../lib/meta-pixel";
 
 const DEFAULT_SIZES = ["S", "M", "L", "XL"];
 const DEFAULT_COLORS = ["Black", "White", "Teal", "Charcoal"];
@@ -31,6 +31,7 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
   const [qty, setQty] = useState(1);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [district, setDistrict] = useState("");
   const [thana, setThana] = useState("");
   const [address, setAddress] = useState("");
@@ -56,9 +57,12 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
 
   useEffect(() => {
     trackMetaEvent("InitiateCheckout", {
-      value: product.price,
+      value: product.price * qty,
+      currency: "BDT",
       contentIds: [product.id],
       contentName: product.name,
+      contents: [{ id: product.id, quantity: qty, itemPrice: product.price }],
+      numItems: qty,
     });
     return () => {
       const s = state.current;
@@ -107,10 +111,22 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
       });
       state.current.placed = true;
       setPlaced(true);
+      const nameParts = fullName.trim().split(/\s+/);
       trackMetaEvent("Purchase", {
         value: grandTotal,
+        currency: "BDT",
         contentIds: [product.id],
         contentName: product.name,
+        contents: [{ id: product.id, quantity: qty, itemPrice: product.price }],
+        numItems: qty,
+        userData: {
+          ...(email.trim() ? { email: email.trim() } : {}),
+          phone: phone.trim(),
+          firstName: nameParts[0] ?? "",
+          ...(nameParts.length > 1 ? { lastName: nameParts[nameParts.length - 1] ?? "" } : {}),
+          city: district,
+          country: "bd",
+        },
       });
     } catch {
       setError("We couldn't place your order. Please try again.");
@@ -247,7 +263,24 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
                     maxLength={14}
                     inputMode="tel"
                     onChange={(e) => setPhone(e.target.value)}
+                    onBlur={() => phone.trim() && setMetaUserData({ phone: phone.trim(), country: "bd" })}
                     placeholder="01XXXXXXXXX"
+                    className="rounded-lg border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-primary"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="ord-email" className="text-xs text-muted-foreground">
+                    Email <span className="opacity-70">(optional)</span>
+                  </label>
+                  <input
+                    id="ord-email"
+                    type="email"
+                    value={email}
+                    maxLength={200}
+                    inputMode="email"
+                    onChange={(e) => setEmail(e.target.value)}
+                    onBlur={() => email.trim() && setMetaUserData({ email: email.trim() })}
+                    placeholder="you@example.com"
                     className="rounded-lg border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-primary"
                   />
                 </div>
