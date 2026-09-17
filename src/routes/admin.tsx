@@ -510,7 +510,7 @@ function AdminPage() {
 
   const pending = orders.filter((o) => o.status === "Pending").length;
   const revenue = orders
-    .filter((o) => o.status !== "Cancelled")
+    .filter((o) => o.status !== "Cancelled" && o.status !== "Fraud / Fake")
     .reduce((sum, o) => sum + Number(o.total), 0);
 
   return (
@@ -590,6 +590,9 @@ function AdminPage() {
                       </div>
                     )}
                     <div>
+                    <p className="text-[11px] font-bold tracking-[0.2em] text-gold uppercase">
+                      Order #{o.order_number ?? "—"}
+                    </p>
                     <p className="font-display font-bold">{o.product_title}</p>
                     <p className="text-xs text-muted-foreground">
                       {o.size} · {o.color} · Qty {o.quantity} ·{" "}

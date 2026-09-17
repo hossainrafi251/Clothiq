@@ -36,6 +36,7 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
   const [thana, setThana] = useState("");
   const [address, setAddress] = useState("");
   const [placed, setPlaced] = useState(false);
+  const [orderNumber, setOrderNumber] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
