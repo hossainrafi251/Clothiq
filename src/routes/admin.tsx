@@ -96,6 +96,7 @@ const NAV: { id: TabId; label: string; icon: typeof Package }[] = [
 
 interface OrderRow {
   id: string;
+  order_number?: number | null;
   product_id?: string | null;
   product_title: string;
   size: string | null;
