@@ -59,7 +59,14 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-const STATUSES = ["Pending", "Processing", "Delivered", "Completed", "Cancelled"] as const;
+const STATUSES = [
+  "Pending",
+  "Processing",
+  "Delivered",
+  "Completed",
+  "Cancelled",
+  "Fraud / Fake",
+] as const;
 const CATEGORIES = ["Watches", "Shirts", "Pants", "Accessories"];
 
 type TabId =
