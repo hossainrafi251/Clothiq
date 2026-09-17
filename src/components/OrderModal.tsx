@@ -95,7 +95,7 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
     setError("");
     setSaving(true);
     try {
-      await submitOrder({
+      const result = await submitOrder({
         data: {
           productId: product.id,
           productTitle: product.name,
@@ -111,6 +111,7 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
         },
       });
       state.current.placed = true;
+      setOrderNumber(result.orderNumber);
       setPlaced(true);
       const nameParts = fullName.trim().split(/\s+/);
       trackMetaEvent("Purchase", {
