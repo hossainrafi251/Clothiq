@@ -113,7 +113,14 @@ export const adminUpdateOrderStatus = createServerFn({ method: "POST" })
     z
       .object({
         id: z.string().uuid(),
-        status: z.enum(["Pending", "Processing", "Delivered", "Completed", "Cancelled"]),
+        status: z.enum([
+          "Pending",
+          "Processing",
+          "Delivered",
+          "Completed",
+          "Cancelled",
+          "Fraud / Fake",
+        ]),
       })
       .parse(input),
   )
@@ -123,17 +130,53 @@ export const adminUpdateOrderStatus = createServerFn({ method: "POST" })
     const sb = await admin();
     const { data: order } = await sb
       .from("orders")
-      .select("product_title,full_name,phone")
+      .select(
+        "order_number,product_id,product_title,full_name,phone,district,quantity,total,meta_feedback_event",
+      )
       .eq("id", data.id)
       .maybeSingle();
     const { error } = await sb.from("orders").update({ status: data.status }).eq("id", data.id);
     if (error) throw new Error(error.message);
 
+    const orderRef = order?.order_number ? `#${order.order_number}` : data.id;
+
+    // Tell Meta the conversion was invalid so its algorithm learns to avoid
+    // similar low-quality buyers. Sent once per order per event type.
+    const feedbackEvent =
+      data.status === "Fraud / Fake"
+        ? "FraudOrder"
+        : data.status === "Cancelled"
+          ? "OrderCancelled"
+          : "";
+    if (order && feedbackEvent && order.meta_feedback_event !== feedbackEvent) {
+      try {
+        const { sendMetaNegativeFeedback } = await import("./meta.server");
+        const result = await sendMetaNegativeFeedback({
+          eventName: feedbackEvent,
+          orderId: orderRef,
+          value: Number(order.total ?? 0),
+          currency: "BDT",
+          ...(order.product_id ? { contentIds: [order.product_id] } : {}),
+          contentName: order.product_title ?? "",
+          quantity: order.quantity ?? 1,
+          fullName: order.full_name ?? "",
+          phone: order.phone ?? "",
+          city: order.district ?? "",
+          reason: data.status,
+        });
+        if (result.ok) {
+          await sb.from("orders").update({ meta_feedback_event: feedbackEvent }).eq("id", data.id);
+        }
+      } catch (metaError) {
+        console.error("[admin] meta negative feedback failed", metaError);
+      }
+    }
+
     try {
       const { notifyOwner } = await import("./alerts.server");
       await notifyOwner(
-        `Order status: ${data.status}`,
-        `Order status changed to ${data.status}. ${order?.product_title ?? "Order"} - ${order?.full_name ?? ""} ${order?.phone ?? ""}`.trim(),
+        `Order ${orderRef} status: ${data.status}`,
+        `Order ${orderRef} status changed to ${data.status}. ${order?.product_title ?? "Order"} - ${order?.full_name ?? ""} ${order?.phone ?? ""}`.trim(),
       );
     } catch (alertError) {
       console.error("[admin] status alert failed", alertError);

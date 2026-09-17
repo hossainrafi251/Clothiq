@@ -211,35 +211,41 @@ export const placeOrder = createServerFn({ method: "POST" })
     const deliveryFee = data.district === "Dhaka" ? inside : outside;
     const total = unitPrice * data.quantity + deliveryFee;
 
-    const { error } = await supabaseAdmin.from("orders").insert({
-      product_id: product.id,
-      product_title: product.title,
-      size: data.size,
-      color: data.color,
-      color_image_url: colorImage,
-      quantity: data.quantity,
-      unit_price: unitPrice,
-      delivery_fee: deliveryFee,
-      total,
-      full_name: data.fullName,
-      phone: data.phone,
-      district: data.district,
-      thana: data.thana,
-      address: data.address,
-    });
-    if (error) throw new Error("Could not save your order. Please try again.");
+    const { data: inserted, error } = await supabaseAdmin
+      .from("orders")
+      .insert({
+        product_id: product.id,
+        product_title: product.title,
+        size: data.size,
+        color: data.color,
+        color_image_url: colorImage,
+        quantity: data.quantity,
+        unit_price: unitPrice,
+        delivery_fee: deliveryFee,
+        total,
+        full_name: data.fullName,
+        phone: data.phone,
+        district: data.district,
+        thana: data.thana,
+        address: data.address,
+      })
+      .select("id,order_number")
+      .single();
+    if (error || !inserted) throw new Error("Could not save your order. Please try again.");
+
+    const orderNumber = `#${inserted.order_number}`;
 
     try {
       const { notifyOwner } = await import("./alerts.server");
       await notifyOwner(
-        `New order: ${product.title}`,
-        `New order! ${product.title} x${data.quantity} = Tk ${total}. ${data.fullName}, ${data.phone}, ${data.thana}, ${data.district}.`,
+        `New order ${orderNumber}: ${product.title}`,
+        `New order ${orderNumber}! ${product.title} x${data.quantity} = Tk ${total}. ${data.fullName}, ${data.phone}, ${data.thana}, ${data.district}.`,
       );
     } catch (alertError) {
       console.error("[store] owner alert failed", alertError);
     }
 
-    return { ok: true as const, total };
+    return { ok: true as const, total, orderNumber, orderId: inserted.id };
   });
 
 /** Records an abandoned checkout so the admin can follow up. */

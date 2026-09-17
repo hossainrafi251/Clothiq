@@ -59,7 +59,14 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-const STATUSES = ["Pending", "Processing", "Delivered", "Completed", "Cancelled"] as const;
+const STATUSES = [
+  "Pending",
+  "Processing",
+  "Delivered",
+  "Completed",
+  "Cancelled",
+  "Fraud / Fake",
+] as const;
 const CATEGORIES = ["Watches", "Shirts", "Pants", "Accessories"];
 
 type TabId =
@@ -89,6 +96,7 @@ const NAV: { id: TabId; label: string; icon: typeof Package }[] = [
 
 interface OrderRow {
   id: string;
+  order_number?: number | null;
   product_id?: string | null;
   product_title: string;
   size: string | null;
@@ -502,7 +510,7 @@ function AdminPage() {
 
   const pending = orders.filter((o) => o.status === "Pending").length;
   const revenue = orders
-    .filter((o) => o.status !== "Cancelled")
+    .filter((o) => o.status !== "Cancelled" && o.status !== "Fraud / Fake")
     .reduce((sum, o) => sum + Number(o.total), 0);
 
   return (
@@ -582,6 +590,9 @@ function AdminPage() {
                       </div>
                     )}
                     <div>
+                    <p className="text-[11px] font-bold tracking-[0.2em] text-gold uppercase">
+                      Order #{o.order_number ?? "—"}
+                    </p>
                     <p className="font-display font-bold">{o.product_title}</p>
                     <p className="text-xs text-muted-foreground">
                       {o.size} · {o.color} · Qty {o.quantity} ·{" "}

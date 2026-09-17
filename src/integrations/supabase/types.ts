@@ -140,6 +140,8 @@ export type Database = {
           district: string
           full_name: string
           id: string
+          meta_feedback_event: string
+          order_number: number | null
           payment_method: string
           phone: string
           product_id: string | null
@@ -160,6 +162,8 @@ export type Database = {
           district: string
           full_name: string
           id?: string
+          meta_feedback_event?: string
+          order_number?: number | null
           payment_method?: string
           phone: string
           product_id?: string | null
@@ -180,6 +184,8 @@ export type Database = {
           district?: string
           full_name?: string
           id?: string
+          meta_feedback_event?: string
+          order_number?: number | null
           payment_method?: string
           phone?: string
           product_id?: string | null

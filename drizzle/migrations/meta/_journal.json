@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1789675878454,
+      "tag": "0000_add_order_number_and_fraud_status",
+      "breakpoints": true
+    }
+  ]
+}

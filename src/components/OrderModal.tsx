@@ -36,6 +36,7 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
   const [thana, setThana] = useState("");
   const [address, setAddress] = useState("");
   const [placed, setPlaced] = useState(false);
+  const [orderNumber, setOrderNumber] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -94,7 +95,7 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
     setError("");
     setSaving(true);
     try {
-      await submitOrder({
+      const result = await submitOrder({
         data: {
           productId: product.id,
           productTitle: product.name,
@@ -110,6 +111,7 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
         },
       });
       state.current.placed = true;
+      setOrderNumber(result.orderNumber);
       setPlaced(true);
       const nameParts = fullName.trim().split(/\s+/);
       trackMetaEvent("Purchase", {
@@ -119,6 +121,7 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
         contentName: product.name,
         contents: [{ id: product.id, quantity: qty, itemPrice: product.price }],
         numItems: qty,
+        orderId: result.orderNumber,
         userData: {
           ...(email.trim() ? { email: email.trim() } : {}),
           phone: phone.trim(),
@@ -152,6 +155,11 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
         {placed ? (
           <div className="flex flex-col items-center gap-3 px-6 py-14 text-center">
             <h2 className="font-display text-2xl font-bold text-gradient-teal">Order Confirmed</h2>
+            {orderNumber && (
+              <p className="rounded-full border border-gold px-4 py-1.5 font-display text-lg font-bold text-gold">
+                Order ID {orderNumber}
+              </p>
+            )}
             <p className="text-sm text-muted-foreground">
               Thank you, {fullName}. We will call {phone} shortly to confirm your Cash on Delivery order.
             </p>
