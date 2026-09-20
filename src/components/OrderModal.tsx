@@ -31,7 +31,6 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
   const [qty, setQty] = useState(1);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
   const [district, setDistrict] = useState("");
   const [thana, setThana] = useState("");
   const [address, setAddress] = useState("");
@@ -275,22 +274,6 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
                     onChange={(e) => setPhone(e.target.value)}
                     onBlur={() => phone.trim() && setMetaUserData({ phone: phone.trim(), country: "bd" })}
                     placeholder="01XXXXXXXXX"
-                    className="rounded-lg border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-primary"
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label htmlFor="ord-email" className="text-xs text-muted-foreground">
-                    Email <span className="opacity-70">(optional)</span>
-                  </label>
-                  <input
-                    id="ord-email"
-                    type="email"
-                    value={email}
-                    maxLength={200}
-                    inputMode="email"
-                    onChange={(e) => setEmail(e.target.value)}
-                    onBlur={() => email.trim() && setMetaUserData({ email: email.trim() })}
-                    placeholder="you@example.com"
                     className="rounded-lg border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-primary"
                   />
                 </div>
