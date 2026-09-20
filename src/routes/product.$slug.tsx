@@ -79,7 +79,7 @@ function ProductPage() {
             </section>
           )}
         </main>
-        <Footer />
+        <Footer settings={settings} />
       </div>
     </CartProvider>
   );

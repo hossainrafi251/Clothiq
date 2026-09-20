@@ -90,7 +90,7 @@ function CategoryPage() {
             </div>
           )}
         </main>
-        <Footer />
+        <Footer settings={settings} />
       </div>
 
       {order && (
