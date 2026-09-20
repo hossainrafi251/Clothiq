@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
-import { Star, Zap, ShoppingBag, Play } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Star, Zap, ShoppingBag, Play, Pause, Volume2, VolumeX, Maximize2, ImageIcon } from "lucide-react";
 import { CartProvider, useCart } from "../lib/cart";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { MetaTracker } from "../components/MetaTracker";
 import { OrderModal } from "../components/OrderModal";
 import { ProductCard } from "../components/ProductCard";
+import { Button } from "../components/ui/button";
 import { bdt } from "../lib/currency";
 import { slugifyCategory } from "../lib/categories";
 import { trackMetaEvent } from "../lib/meta-pixel";
@@ -120,6 +121,203 @@ function RelatedCard({ product, settings }: { product: Product; settings: Record
   );
 }
 
+function ProductMediaGallery({
+  product,
+  image,
+  imageAlt,
+}: {
+  product: Product;
+  image: string;
+  imageAlt: string;
+}) {
+  const [view, setView] = useState<"image" | "video">("image");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const syncFullscreen = () => setIsFullscreen(document.fullscreenElement === stageRef.current);
+    document.addEventListener("fullscreenchange", syncFullscreen);
+    return () => document.removeEventListener("fullscreenchange", syncFullscreen);
+  }, []);
+
+  useEffect(() => {
+    if (view === "image") {
+      videoRef.current?.pause();
+    }
+  }, [view]);
+
+  const togglePlayback = async () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      await video.play().catch(() => undefined);
+    } else {
+      video.pause();
+    }
+  };
+
+  const toggleMute = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    setIsMuted(video.muted);
+  };
+
+  const toggleFullscreen = async () => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    if (document.fullscreenElement) {
+      await document.exitFullscreen().catch(() => undefined);
+    } else {
+      await stage.requestFullscreen().catch(() => undefined);
+    }
+  };
+
+  return (
+    <div className="space-y-3">
+      <div
+        ref={stageRef}
+        className="group relative overflow-hidden rounded-2xl border border-border bg-card"
+      >
+        {view === "video" && product.video ? (
+          <>
+            <video
+              ref={videoRef}
+              key={product.video}
+              src={product.video}
+              playsInline
+              muted={isMuted}
+              preload="metadata"
+              poster={image}
+              aria-label={`${product.name} product video`}
+              onClick={togglePlayback}
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+              onEnded={() => setIsPlaying(false)}
+              onVolumeChange={(event) => setIsMuted(event.currentTarget.muted)}
+              className="aspect-square w-full cursor-pointer bg-background object-contain"
+            />
+
+            {!isPlaying && (
+              <Button
+                type="button"
+                size="icon"
+                onClick={togglePlayback}
+                aria-label="Play product video"
+                className="absolute top-1/2 left-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/95 shadow-lg hover:bg-primary"
+              >
+                <Play className="ml-0.5 h-6 w-6" />
+              </Button>
+            )}
+
+            <div className="absolute inset-x-3 bottom-3 flex items-center justify-between rounded-lg border border-border/60 bg-background/90 p-1.5 shadow-lg backdrop-blur-md sm:inset-x-4 sm:bottom-4">
+              <div className="flex items-center gap-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={togglePlayback}
+                  aria-label={isPlaying ? "Pause product video" : "Play product video"}
+                  title={isPlaying ? "Pause" : "Play"}
+                  className="h-9 w-9 rounded-md"
+                >
+                  {isPlaying ? <Pause /> : <Play />}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleMute}
+                  aria-label={isMuted ? "Unmute product video" : "Mute product video"}
+                  title={isMuted ? "Unmute" : "Mute"}
+                  className="h-9 w-9 rounded-md"
+                >
+                  {isMuted ? <VolumeX /> : <Volume2 />}
+                </Button>
+              </div>
+              <span className="hidden text-xs font-semibold text-muted-foreground sm:block">
+                Product video
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={toggleFullscreen}
+                aria-label={isFullscreen ? "Exit fullscreen" : "View product video fullscreen"}
+                title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+                className="h-9 w-9 rounded-md"
+              >
+                <Maximize2 />
+              </Button>
+            </div>
+          </>
+        ) : (
+          <img
+            key={image}
+            src={image}
+            alt={imageAlt}
+            width={1024}
+            height={1024}
+            className="aspect-square w-full object-cover"
+          />
+        )}
+      </div>
+
+      {product.video && (
+        <div className="flex items-center gap-3" role="tablist" aria-label="Product media">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setView("image")}
+            role="tab"
+            aria-selected={view === "image"}
+            aria-label="Show product photo"
+            className={`relative h-20 w-20 overflow-hidden rounded-lg border-2 p-0 transition-colors ${
+              view === "image" ? "border-primary ring-2 ring-primary/25" : "border-border hover:border-primary/60"
+            }`}
+          >
+            <img src={image} alt="" className="h-full w-full object-cover" />
+            <span className="absolute right-1 bottom-1 grid h-6 w-6 place-items-center rounded-md bg-background/90 text-foreground shadow">
+              <ImageIcon className="h-3.5 w-3.5" />
+            </span>
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setView("video")}
+            role="tab"
+            aria-selected={view === "video"}
+            aria-label="Show product video"
+            className={`relative h-20 w-20 overflow-hidden rounded-lg border-2 p-0 transition-colors ${
+              view === "video" ? "border-primary ring-2 ring-primary/25" : "border-border hover:border-primary/60"
+            }`}
+          >
+            <video
+              src={product.video}
+              muted
+              playsInline
+              preload="metadata"
+              poster={image}
+              className="h-full w-full bg-background object-cover"
+            />
+            <span className="absolute inset-0 grid place-items-center bg-background/35">
+              <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-primary-foreground shadow">
+                <Play className="ml-0.5 h-4 w-4" />
+              </span>
+            </span>
+          </Button>
+          <span className="text-xs font-medium text-muted-foreground" aria-live="polite">
+            {view === "image" ? "Product photo" : "Product video"}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ProductDetail({
   product,
   offerNote,
@@ -133,7 +331,6 @@ function ProductDetail({
   const variants = (product.colorVariants ?? []).filter((v) => v.name);
   const [selected, setSelected] = useState(variants[0]?.name ?? "");
   const [ordering, setOrdering] = useState(false);
-  const [view, setView] = useState<"image" | "video">("image");
   const activeVariant = variants.find((v) => v.name === selected);
   const shownImage = activeVariant?.image || product.image;
 
@@ -156,68 +353,11 @@ function ProductDetail({
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-2">
-        <div className="space-y-3">
-          <div className="overflow-hidden rounded-2xl border border-border bg-card">
-            {view === "video" && product.video ? (
-              <video
-                key={product.video}
-                src={product.video}
-                controls
-                playsInline
-                autoPlay
-                muted
-                loop
-                preload="metadata"
-                poster={shownImage}
-                className="aspect-square w-full bg-black object-contain"
-              />
-            ) : (
-              <img
-                key={shownImage}
-                src={shownImage}
-                alt={activeVariant ? `${product.name} — ${activeVariant.name}` : product.name}
-                width={1024}
-                height={1024}
-                className="aspect-square w-full object-cover"
-              />
-            )}
-          </div>
-
-          {product.video && (
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => setView("image")}
-                aria-label="Show product photo"
-                className={`relative h-20 w-20 overflow-hidden rounded-xl border-2 transition ${
-                  view === "image" ? "border-accent" : "border-border hover:border-accent/60"
-                }`}
-              >
-                <img src={shownImage} alt="" className="h-full w-full object-cover" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setView("video")}
-                aria-label="Play product video"
-                className={`relative h-20 w-20 overflow-hidden rounded-xl border-2 transition ${
-                  view === "video" ? "border-accent" : "border-border hover:border-accent/60"
-                }`}
-              >
-                <video
-                  src={product.video}
-                  muted
-                  playsInline
-                  preload="metadata"
-                  poster={shownImage}
-                  className="h-full w-full bg-black object-cover"
-                />
-                <span className="absolute inset-0 flex items-center justify-center bg-black/35">
-                  <Play className="h-6 w-6 text-white" />
-                </span>
-              </button>
-            </div>
-          )}
-        </div>
+        <ProductMediaGallery
+          product={product}
+          image={shownImage}
+          imageAlt={activeVariant ? `${product.name} — ${activeVariant.name}` : product.name}
+        />
 
 
         <div>
