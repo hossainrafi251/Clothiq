@@ -454,3 +454,27 @@ export const adminUploadImage = createServerFn({ method: "POST" })
 
     return { ...granted, url: `/api/public/img/${key}` };
   });
+
+/* ------------------------------------------------------------------ */
+/* Direct video upload (signed URL, no size round-trip through the fn) */
+/* ------------------------------------------------------------------ */
+
+export const adminCreateVideoUpload = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) =>
+    z.object({ filename: z.string().trim().min(1).max(200) }).parse(input),
+  )
+  .handler(async ({ data }) => {
+    const user = await currentUser();
+    if (!user?.isAdmin) return { ...denied, path: "", token: "", url: "" };
+
+    const ext = (data.filename.split(".").pop() ?? "mp4").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const key = `video-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext || "mp4"}`;
+
+    const sb = await admin();
+    const { data: signed, error } = await sb.storage
+      .from("product-images")
+      .createSignedUploadUrl(key);
+    if (error || !signed) throw new Error(error?.message ?? "Could not start the upload.");
+
+    return { ...granted, path: signed.path, token: signed.token, url: `/api/public/media/${key}` };
+  });
