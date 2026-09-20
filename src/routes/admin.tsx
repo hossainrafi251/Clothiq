@@ -1238,7 +1238,64 @@ function AdminPage() {
           </div>
         )}
 
+        {/* GENERAL SETTINGS */}
+        {tab === "general" && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              void persistSettings(GENERAL_KEYS, "General settings saved.");
+            }}
+            className="max-w-3xl space-y-8"
+          >
+            <div>
+              <h2 className="font-display text-xl font-bold">General Settings</h2>
+              <p className="text-sm text-muted-foreground">
+                Website details, contact numbers, support email and social links. These
+                values appear across the storefront right after you save.
+              </p>
+            </div>
+
+            {GENERAL_GROUPS.map((group) => (
+              <div key={group.title} className="space-y-4 rounded-xl border border-border p-5">
+                <div>
+                  <h3 className="text-sm font-bold">{group.title}</h3>
+                  <p className="text-xs text-muted-foreground">{group.hint}</p>
+                </div>
+                {group.keys.map((key) => (
+                  <label key={key} className="block text-xs text-muted-foreground">
+                    {label(key)}
+                    {MULTILINE_KEYS.includes(key) ? (
+                      <textarea
+                        rows={3}
+                        maxLength={2000}
+                        value={getSetting(key)}
+                        onChange={(e) => setSetting(key, e.target.value)}
+                        className={inputClass}
+                      />
+                    ) : (
+                      <input
+                        maxLength={2000}
+                        value={getSetting(key)}
+                        onChange={(e) => setSetting(key, e.target.value)}
+                        className={inputClass}
+                      />
+                    )}
+                  </label>
+                ))}
+              </div>
+            ))}
+
+            <button
+              type="submit"
+              className="bg-gradient-teal rounded-full px-6 py-3 text-xs font-bold tracking-widest text-primary-foreground uppercase"
+            >
+              Save General Settings
+            </button>
+          </form>
+        )}
+
         {/* BRANDING */}
+
         {tab === "branding" && (
           <form
             onSubmit={(e) => {
