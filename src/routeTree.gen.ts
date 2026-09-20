@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CategoryCategoryRouteImport } from './routes/category.$category'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as ApiPublicImgKeyRouteImport } from './routes/api/public/img/$key'
+import { Route as ApiPublicMediaKeyRouteImport } from './routes/api/public/media/$key'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +41,11 @@ const ApiPublicImgKeyRoute = ApiPublicImgKeyRouteImport.update({
   path: '/api/public/img/$key',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMediaKeyRoute = ApiPublicMediaKeyRouteImport.update({
+  id: '/api/public/media/$key',
+  path: '/api/public/media/$key',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$slug': typeof ProductSlugRoute
   '/api/public/img/$key': typeof ApiPublicImgKeyRoute
+  '/api/public/media/$key': typeof ApiPublicMediaKeyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$slug': typeof ProductSlugRoute
   '/api/public/img/$key': typeof ApiPublicImgKeyRoute
+  '/api/public/media/$key': typeof ApiPublicMediaKeyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,6 +70,7 @@ export interface FileRoutesById {
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$slug': typeof ProductSlugRoute
   '/api/public/img/$key': typeof ApiPublicImgKeyRoute
+  '/api/public/media/$key': typeof ApiPublicMediaKeyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -71,6 +80,7 @@ export interface FileRouteTypes {
     | '/category/$category'
     | '/product/$slug'
     | '/api/public/img/$key'
+    | '/api/public/media/$key'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -78,6 +88,7 @@ export interface FileRouteTypes {
     | '/category/$category'
     | '/product/$slug'
     | '/api/public/img/$key'
+    | '/api/public/media/$key'
   id:
     | '__root__'
     | '/'
@@ -85,6 +96,7 @@ export interface FileRouteTypes {
     | '/category/$category'
     | '/product/$slug'
     | '/api/public/img/$key'
+    | '/api/public/media/$key'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -93,6 +105,7 @@ export interface RootRouteChildren {
   CategoryCategoryRoute: typeof CategoryCategoryRoute
   ProductSlugRoute: typeof ProductSlugRoute
   ApiPublicImgKeyRoute: typeof ApiPublicImgKeyRoute
+  ApiPublicMediaKeyRoute: typeof ApiPublicMediaKeyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -132,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicImgKeyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/media/$key': {
+      id: '/api/public/media/$key'
+      path: '/api/public/media/$key'
+      fullPath: '/api/public/media/$key'
+      preLoaderRoute: typeof ApiPublicMediaKeyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -141,6 +161,7 @@ const rootRouteChildren: RootRouteChildren = {
   CategoryCategoryRoute: CategoryCategoryRoute,
   ProductSlugRoute: ProductSlugRoute,
   ApiPublicImgKeyRoute: ApiPublicImgKeyRoute,
+  ApiPublicMediaKeyRoute: ApiPublicMediaKeyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

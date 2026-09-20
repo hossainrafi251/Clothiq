@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ImageUpload } from "@/components/ImageUpload";
+import { VideoUpload } from "@/components/VideoUpload";
 import {
   BarChart3,
   Bell,
@@ -124,6 +125,7 @@ interface ProductRow {
   title: string;
   price: number;
   image_url: string;
+  video_url: string;
   description: string;
   offer_note: string;
   category: string;
@@ -189,6 +191,7 @@ const emptyProduct: Omit<ProductRow, "id"> & { id?: string } = {
   title: "",
   price: 0,
   image_url: "",
+  video_url: "",
   description: "",
   offer_note: "",
   category: "Watches",
@@ -769,6 +772,7 @@ function AdminPage() {
                         title: draft.title,
                         price: Number(draft.price),
                         image_url: draft.image_url,
+                        video_url: draft.video_url,
                         description: draft.description,
                         offer_note: draft.offer_note,
                         category: draft.category,
@@ -816,6 +820,11 @@ function AdminPage() {
                   label="Product image"
                   value={draft.image_url}
                   onChange={(url) => setDraft({ ...draft, image_url: url })}
+                />
+                <VideoUpload
+                  label="Product video (optional, MP4/WebM)"
+                  value={draft.video_url}
+                  onChange={(url) => setDraft({ ...draft, video_url: url })}
                 />
                 <label className="text-xs text-muted-foreground">
                   Category
@@ -982,7 +991,12 @@ function AdminPage() {
                     <div className="mt-2 flex gap-2">
                       <button
                         onClick={() =>
-                          setDraft({ ...p, tag: p.tag ?? "", offer_note: p.offer_note ?? "" })
+                          setDraft({
+                            ...p,
+                            tag: p.tag ?? "",
+                            offer_note: p.offer_note ?? "",
+                            video_url: p.video_url ?? "",
+                          })
                         }
                         className="rounded-full border border-border px-3 py-1 text-[11px] font-bold uppercase hover:text-primary"
                       >

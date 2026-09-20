@@ -200,6 +200,7 @@ const productSchema = z.object({
   title: z.string().trim().min(1).max(200),
   price: z.number().min(0).max(10_000_000),
   image_url: z.string().trim().max(1000),
+  video_url: z.string().trim().max(1000).default(""),
   description: z.string().trim().max(2000),
   offer_note: z.string().trim().max(300),
   category: z.string().trim().min(1).max(60),
@@ -453,4 +454,28 @@ export const adminUploadImage = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     return { ...granted, url: `/api/public/img/${key}` };
+  });
+
+/* ------------------------------------------------------------------ */
+/* Direct video upload (signed URL, no size round-trip through the fn) */
+/* ------------------------------------------------------------------ */
+
+export const adminCreateVideoUpload = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) =>
+    z.object({ filename: z.string().trim().min(1).max(200) }).parse(input),
+  )
+  .handler(async ({ data }) => {
+    const user = await currentUser();
+    if (!user?.isAdmin) return { ...denied, path: "", token: "", url: "" };
+
+    const ext = (data.filename.split(".").pop() ?? "mp4").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const key = `video-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext || "mp4"}`;
+
+    const sb = await admin();
+    const { data: signed, error } = await sb.storage
+      .from("product-images")
+      .createSignedUploadUrl(key);
+    if (error || !signed) throw new Error(error?.message ?? "Could not start the upload.");
+
+    return { ...granted, path: signed.path, token: signed.token, url: `/api/public/media/${key}` };
   });

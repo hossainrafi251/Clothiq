@@ -19,6 +19,7 @@ export interface DbProduct {
   title: string;
   price: number;
   image_url: string;
+  video_url: string;
   description: string;
   offer_note: string;
   category: string;
@@ -42,6 +43,7 @@ export function toProduct(p: DbProduct): Product {
     rating: Number(p.rating),
     reviews: p.reviews,
     image: p.image_url,
+    ...(p.video_url ? { video: p.video_url } : {}),
     ...(p.tag ? { tag: p.tag } : {}),
     colorVariants: parseVariants(p.color_variants),
   };
@@ -64,7 +66,7 @@ function publicClient() {
 }
 
 const PRODUCT_COLUMNS =
-  "id,slug,title,price,image_url,description,offer_note,category,stock,tag,rating,reviews,sort_order,color_variants";
+  "id,slug,title,price,image_url,video_url,description,offer_note,category,stock,tag,rating,reviews,sort_order,color_variants";
 
 function normalizeProduct(p: Record<string, unknown>): DbProduct {
   return {

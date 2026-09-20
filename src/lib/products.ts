@@ -16,6 +16,7 @@ export interface Product {
   rating: number;
   reviews: number;
   image: string;
+  video?: string;
   tag?: string;
   sizes?: string[];
   colors?: string[];
