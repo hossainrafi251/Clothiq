@@ -67,7 +67,11 @@ function ProductPage() {
         />
         <Header />
         <main>
-          <ProductDetail product={toProduct(product)} settings={settings} />
+          <ProductDetail
+            product={toProduct(product)}
+            offerNote={product.offer_note}
+            settings={settings}
+          />
           {related.length > 0 && (
             <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
               <h2 className="font-display mb-6 text-2xl font-bold">You may also like</h2>
@@ -118,9 +122,11 @@ function RelatedCard({ product, settings }: { product: Product; settings: Record
 
 function ProductDetail({
   product,
+  offerNote,
   settings,
 }: {
   product: Product;
+  offerNote: string;
   settings: Record<string, string>;
 }) {
   const { addItem } = useCart();
@@ -167,6 +173,11 @@ function ProductDetail({
           <h1 className="font-display mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
             {product.name}
           </h1>
+          {offerNote.trim() && (
+            <p className="mt-2 text-base font-semibold text-muted-foreground sm:text-lg">
+              {offerNote.trim()}
+            </p>
+          )}
           <div className="mt-3 flex items-center gap-1.5">
             <div className="flex">
               {Array.from({ length: 5 }).map((_, i) => (

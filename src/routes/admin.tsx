@@ -125,6 +125,7 @@ interface ProductRow {
   price: number;
   image_url: string;
   description: string;
+  offer_note: string;
   category: string;
   stock: number;
   tag: string | null;
@@ -189,6 +190,7 @@ const emptyProduct: Omit<ProductRow, "id"> & { id?: string } = {
   price: 0,
   image_url: "",
   description: "",
+  offer_note: "",
   category: "Watches",
   stock: 0,
   tag: "",
@@ -768,6 +770,7 @@ function AdminPage() {
                         price: Number(draft.price),
                         image_url: draft.image_url,
                         description: draft.description,
+                        offer_note: draft.offer_note,
                         category: draft.category,
                         stock: Number(draft.stock),
                         tag: draft.tag ? draft.tag : null,
@@ -845,6 +848,16 @@ function AdminPage() {
                     value={draft.tag ?? ""}
                     onChange={(e) => setDraft({ ...draft, tag: e.target.value })}
                     placeholder="Best Seller"
+                    className={inputClass}
+                  />
+                </label>
+                <label className="text-xs text-muted-foreground sm:col-span-2">
+                  Offer / Freebie Note (optional)
+                  <input
+                    maxLength={300}
+                    value={draft.offer_note}
+                    onChange={(e) => setDraft({ ...draft, offer_note: e.target.value })}
+                    placeholder="e.g. Free premium gift box with this item"
                     className={inputClass}
                   />
                 </label>
@@ -968,7 +981,9 @@ function AdminPage() {
                     </p>
                     <div className="mt-2 flex gap-2">
                       <button
-                        onClick={() => setDraft({ ...p, tag: p.tag ?? "" })}
+                        onClick={() =>
+                          setDraft({ ...p, tag: p.tag ?? "", offer_note: p.offer_note ?? "" })
+                        }
                         className="rounded-full border border-border px-3 py-1 text-[11px] font-bold uppercase hover:text-primary"
                       >
                         Edit
