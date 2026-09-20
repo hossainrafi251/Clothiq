@@ -179,6 +179,7 @@ const orderSchema = z.object({
   quantity: z.number().int().min(1).max(50),
   unitPrice: z.number().min(0).max(10_000_000),
   fullName: z.string().trim().min(1).max(100),
+  email: z.string().trim().email().max(200).or(z.literal("")).default(""),
   phone: z.string().trim().regex(/^01[3-9]\d{8}$/),
   district: z.string().trim().min(1).max(60),
   thana: z.string().trim().min(1).max(80),
@@ -237,6 +238,26 @@ export const placeOrder = createServerFn({ method: "POST" })
     if (error || !inserted) throw new Error("Could not save your order. Please try again.");
 
     const orderNumber = `#${inserted.order_number}`;
+    const metaEventId = `Purchase-${inserted.id}`;
+
+    try {
+      const { sendMetaPurchase } = await import("./meta.server");
+      await sendMetaPurchase({
+        eventId: metaEventId,
+        orderId: orderNumber,
+        value: total,
+        productId: product.id,
+        productTitle: product.title,
+        quantity: data.quantity,
+        unitPrice,
+        fullName: data.fullName,
+        email: data.email,
+        phone: data.phone,
+        city: data.district,
+      });
+    } catch (metaError) {
+      console.error("[store] verified purchase event failed", metaError);
+    }
 
     try {
       const { notifyOwner } = await import("./alerts.server");
@@ -248,7 +269,7 @@ export const placeOrder = createServerFn({ method: "POST" })
       console.error("[store] owner alert failed", alertError);
     }
 
-    return { ok: true as const, total, orderNumber, orderId: inserted.id };
+    return { ok: true as const, total, orderNumber, orderId: inserted.id, metaEventId };
   });
 
 /** Records an abandoned checkout so the admin can follow up. */

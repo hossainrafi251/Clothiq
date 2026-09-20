@@ -1,5 +1,3 @@
-import { sendMetaEvent } from "./meta.functions";
-
 export type MetaEventName =
   | "PageView"
   | "ViewContent"
@@ -132,15 +130,17 @@ export interface MetaEventOptions {
   numItems?: number;
   orderId?: string;
   userData?: MetaUserData;
+  /** Server-issued ID used to deduplicate a verified Purchase event. */
+  eventId?: string;
 }
 
 /**
- * Fires the browser pixel event and the server-side Conversions API event with
- * one shared event id so Meta deduplicates them.
+ * Fires a browser pixel event. Purchase events can use the server-issued event
+ * ID returned after a real order is stored, allowing safe CAPI deduplication.
  */
 export function trackMetaEvent(name: MetaEventName, options: MetaEventOptions = {}): void {
   if (typeof window === "undefined") return;
-  const eventId = newEventId();
+  const eventId = options.eventId ?? newEventId();
   const currency = options.currency ?? "BDT";
 
   if (options.userData) setMetaUserData(options.userData);
@@ -170,32 +170,4 @@ export function trackMetaEvent(name: MetaEventName, options: MetaEventOptions = 
     console.error("[meta] browser pixel event failed", error);
   }
 
-  const ud = { ...advancedMatch, ...(options.userData ?? {}) };
-
-  void sendMetaEvent({
-    data: {
-      eventName: name,
-      eventId,
-      eventSourceUrl: window.location.href,
-      currency,
-      ...(options.value !== undefined ? { value: options.value } : {}),
-      ...(options.contentIds ? { contentIds: options.contentIds } : {}),
-      ...(options.contentName ? { contentName: options.contentName } : {}),
-      ...(contents ? { contents: options.contents } : {}),
-      ...(options.numItems !== undefined ? { numItems: options.numItems } : {}),
-      ...(options.orderId ? { orderId: options.orderId } : {}),
-      ...(Object.keys(ud).length > 0
-        ? {
-            userData: {
-              ...(ud.email ? { email: ud.email } : {}),
-              ...(ud.phone ? { phone: normalizePhone(ud.phone) } : {}),
-              ...(ud.firstName ? { firstName: ud.firstName } : {}),
-              ...(ud.lastName ? { lastName: ud.lastName } : {}),
-              ...(ud.city ? { city: ud.city } : {}),
-              ...(ud.country ? { country: ud.country } : {}),
-            },
-          }
-        : {}),
-    },
-  }).catch((error: unknown) => console.error("[meta] CAPI call failed", error));
 }

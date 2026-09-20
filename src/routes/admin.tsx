@@ -282,7 +282,6 @@ function AdminPage() {
   const [checking, setChecking] = useState(true);
   const [signedIn, setSignedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [authTab, setAuthTab] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -411,22 +410,10 @@ function AdminPage() {
     if (busy) return;
     setBusy(true);
     try {
-      if (authTab === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast.success("Signed in successfully!");
-        setPassword("");
-      } else {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: `${window.location.origin}/admin` },
-        });
-        if (error) throw error;
-        setPassword("");
-        if (data.session) toast.success("Signed up successfully!");
-        else toast.success("Signed up! Check your email to confirm your account.");
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      toast.success("Signed in successfully!");
+      setPassword("");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Authentication failed.");
     } finally {
@@ -478,23 +465,6 @@ function AdminPage() {
             CLOTHIQ <span className="text-gradient-teal">Admin</span>
           </h1>
 
-          <div className="mt-6 grid grid-cols-2 gap-2 rounded-full border border-border p-1">
-            {(["login", "signup"] as const).map((t) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setAuthTab(t)}
-                className={
-                  t === authTab
-                    ? "bg-gradient-teal rounded-full py-2 text-xs font-bold tracking-wide text-primary-foreground uppercase"
-                    : "rounded-full py-2 text-xs font-bold tracking-wide text-muted-foreground uppercase hover:text-foreground"
-                }
-              >
-                {t === "login" ? "Log In" : "Sign Up"}
-              </button>
-            ))}
-          </div>
-
           <input
             type="email"
             required
@@ -502,7 +472,7 @@ function AdminPage() {
             autoComplete="email"
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
-            className={`${inputClass} mt-5`}
+            className={`${inputClass} mt-6`}
           />
           <input
             type="password"
@@ -510,7 +480,7 @@ function AdminPage() {
             minLength={6}
             maxLength={200}
             value={password}
-            autoComplete={authTab === "login" ? "current-password" : "new-password"}
+            autoComplete="current-password"
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
             className={`${inputClass} mt-3`}
@@ -520,7 +490,7 @@ function AdminPage() {
             disabled={busy}
             className="bg-gradient-teal mt-5 w-full rounded-full py-3 text-sm font-bold tracking-widest text-primary-foreground uppercase disabled:opacity-60"
           >
-            {busy ? "Please wait…" : authTab === "login" ? "Log In" : "Sign Up"}
+            {busy ? "Please wait…" : "Log In"}
           </button>
         </form>
       </div>
