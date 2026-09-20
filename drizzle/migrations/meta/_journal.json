@@ -8,6 +8,13 @@
       "when": 1789675878454,
       "tag": "0000_add_order_number_and_fraud_status",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789906032740,
+      "tag": "0001_add_product_offer_note",
+      "breakpoints": true
     }
   ]
 }
