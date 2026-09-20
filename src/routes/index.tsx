@@ -56,7 +56,7 @@ function Index() {
           <ProductGrid products={products.map(toProduct)} settings={settings} />
           <Reviews reviews={reviews} settings={settings} />
         </main>
-        <Footer />
+        <Footer settings={settings} />
       </div>
     </CartProvider>
   );

@@ -11,10 +11,12 @@ import {
   LayoutList,
   LogOut,
   Package,
+  Settings as SettingsIcon,
   Star,
   Tag,
   Timer,
   Truck,
+
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -75,6 +77,7 @@ type TabId =
   | "products"
   | "coupons"
   | "reviews"
+  | "general"
   | "branding"
   | "delivery"
   | "flash"
@@ -87,12 +90,14 @@ const NAV: { id: TabId; label: string; icon: typeof Package }[] = [
   { id: "products", label: "Products", icon: Package },
   { id: "coupons", label: "Coupons", icon: Tag },
   { id: "reviews", label: "Reviews", icon: Star },
+  { id: "general", label: "General Settings", icon: SettingsIcon },
   { id: "branding", label: "Branding", icon: ImageIcon },
   { id: "delivery", label: "Delivery", icon: Truck },
   { id: "flash", label: "Flash Sale", icon: Timer },
   { id: "alerts", label: "Alerts", icon: Bell },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
 ];
+
 
 interface OrderRow {
   id: string;
@@ -220,6 +225,34 @@ const BRANDING_KEYS = [
 const DELIVERY_KEYS = ["delivery_inside_dhaka", "delivery_outside_dhaka"];
 const FLASH_KEYS = ["flash_sale_active", "flash_sale_title", "flash_sale_ends_at"];
 const ALERT_KEYS = ["alert_phone", "alert_email"];
+
+/** Public site configuration editable from the General Settings page. */
+const GENERAL_GROUPS: { title: string; hint: string; keys: string[] }[] = [
+  {
+    title: "Website details",
+    hint: "Store name, tagline and the short description used across the site.",
+    keys: ["site_name", "site_tagline", "site_description", "footer_about"],
+  },
+  {
+    title: "Contact numbers",
+    hint: "Shown to customers in the footer and used for call / WhatsApp links.",
+    keys: ["contact_phone", "contact_phone_2", "whatsapp_number"],
+  },
+  {
+    title: "Email & address",
+    hint: "Support inbox and the shop address customers can visit.",
+    keys: ["support_email", "contact_address", "business_hours"],
+  },
+  {
+    title: "Social links",
+    hint: "Full links, e.g. https://facebook.com/yourpage",
+    keys: ["facebook_url", "instagram_url", "tiktok_url", "youtube_url"],
+  },
+];
+
+const GENERAL_KEYS = GENERAL_GROUPS.flatMap((g) => g.keys);
+const MULTILINE_KEYS = ["site_description", "footer_about", "contact_address"];
+
 
 function label(key: string) {
   return key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -1205,7 +1238,64 @@ function AdminPage() {
           </div>
         )}
 
+        {/* GENERAL SETTINGS */}
+        {tab === "general" && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              void persistSettings(GENERAL_KEYS, "General settings saved.");
+            }}
+            className="max-w-3xl space-y-8"
+          >
+            <div>
+              <h2 className="font-display text-xl font-bold">General Settings</h2>
+              <p className="text-sm text-muted-foreground">
+                Website details, contact numbers, support email and social links. These
+                values appear across the storefront right after you save.
+              </p>
+            </div>
+
+            {GENERAL_GROUPS.map((group) => (
+              <div key={group.title} className="space-y-4 rounded-xl border border-border p-5">
+                <div>
+                  <h3 className="text-sm font-bold">{group.title}</h3>
+                  <p className="text-xs text-muted-foreground">{group.hint}</p>
+                </div>
+                {group.keys.map((key) => (
+                  <label key={key} className="block text-xs text-muted-foreground">
+                    {label(key)}
+                    {MULTILINE_KEYS.includes(key) ? (
+                      <textarea
+                        rows={3}
+                        maxLength={2000}
+                        value={getSetting(key)}
+                        onChange={(e) => setSetting(key, e.target.value)}
+                        className={inputClass}
+                      />
+                    ) : (
+                      <input
+                        maxLength={2000}
+                        value={getSetting(key)}
+                        onChange={(e) => setSetting(key, e.target.value)}
+                        className={inputClass}
+                      />
+                    )}
+                  </label>
+                ))}
+              </div>
+            ))}
+
+            <button
+              type="submit"
+              className="bg-gradient-teal rounded-full px-6 py-3 text-xs font-bold tracking-widest text-primary-foreground uppercase"
+            >
+              Save General Settings
+            </button>
+          </form>
+        )}
+
         {/* BRANDING */}
+
         {tab === "branding" && (
           <form
             onSubmit={(e) => {
