@@ -47,14 +47,14 @@ export function ProductCard({ product, onOrder }: Props) {
         </button>
       </div>
 
-      <div className="flex flex-1 flex-col p-5">
-        <p className="text-[11px] font-semibold tracking-[0.2em] text-accent uppercase">{product.category}</p>
+      <div className="flex min-w-0 flex-1 flex-col p-3 sm:p-5">
+        <p className="truncate text-[9px] font-semibold tracking-[0.16em] text-accent uppercase sm:text-[11px] sm:tracking-[0.2em]">{product.category}</p>
         <Link to="/product/$slug" params={{ slug }}>
-          <h3 className="font-display mt-1.5 text-base leading-snug font-bold transition-colors hover:text-gold">
+          <h3 className="font-display mt-1.5 line-clamp-2 min-h-10 text-sm leading-5 font-bold transition-colors hover:text-gold sm:min-h-0 sm:text-base sm:leading-snug">
             {product.name}
           </h3>
         </Link>
-        <div className="mt-2 flex items-center gap-1.5">
+        <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1">
           <div className="flex">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
@@ -67,17 +67,17 @@ export function ProductCard({ product, onOrder }: Props) {
               />
             ))}
           </div>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-[10px] text-muted-foreground sm:text-xs">
             {product.rating} ({product.reviews})
           </span>
         </div>
 
         {variants.length > 0 && (
-          <div className="mt-3">
+          <div className="mt-3 min-w-0">
             <p className="text-[10px] font-semibold tracking-[0.2em] text-muted-foreground uppercase">
               Color: <span className="text-foreground">{selected}</span>
             </p>
-            <div className="mt-2 flex flex-wrap gap-1.5">
+            <div className="mt-2 flex min-w-0 flex-wrap gap-1.5">
               {variants.map((v) => (
                 <button
                   key={v.name}
@@ -86,8 +86,8 @@ export function ProductCard({ product, onOrder }: Props) {
                   onClick={() => setSelected(v.name)}
                   className={
                     v.name === selected
-                      ? "rounded-full border border-gold px-3 py-1 text-[10px] font-bold tracking-wide text-gold uppercase"
-                      : "rounded-full border border-border px-3 py-1 text-[10px] font-bold tracking-wide text-muted-foreground uppercase transition-colors hover:text-foreground"
+                      ? "max-w-full truncate rounded-full border border-gold px-2 py-1 text-[9px] font-bold tracking-wide text-gold uppercase sm:px-3 sm:text-[10px]"
+                      : "max-w-full truncate rounded-full border border-border px-2 py-1 text-[9px] font-bold tracking-wide text-muted-foreground uppercase transition-colors hover:text-foreground sm:px-3 sm:text-[10px]"
                   }
                 >
                   {v.name}
@@ -98,8 +98,8 @@ export function ProductCard({ product, onOrder }: Props) {
         )}
 
         <div className="mt-4 pt-2">
-          <p className="font-display text-lg font-bold text-gold">{bdt(product.price)}</p>
-          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+          <p className="font-display text-base font-bold text-gold sm:text-lg">{bdt(product.price)}</p>
+          <div className="mt-3 flex flex-col gap-2 md:flex-row">
             <button
               onClick={() => {
                 addItem({ ...product, image: shownImage });
@@ -109,7 +109,7 @@ export function ProductCard({ product, onOrder }: Props) {
                   contentName: product.name,
                 });
               }}
-              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2.5 text-xs font-bold tracking-wide text-foreground uppercase transition-colors hover:border-primary hover:text-primary"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full border border-border px-2 py-2.5 text-[10px] font-bold tracking-wide whitespace-nowrap text-foreground uppercase transition-colors hover:border-primary hover:text-primary sm:px-3 sm:text-xs"
             >
               <ShoppingBag className="h-3.5 w-3.5" />
               Add to Cart
@@ -123,7 +123,7 @@ export function ProductCard({ product, onOrder }: Props) {
                   contentName: product.name,
                 });
               }}
-              className="bg-gradient-teal inline-flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-2.5 text-xs font-bold tracking-wide text-primary-foreground uppercase shadow-[0_0_24px_-8px_oklch(0.85_0.13_200/70%)] transition-transform hover:scale-105"
+              className="bg-gradient-teal inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full px-2 py-2.5 text-[10px] font-bold tracking-wide whitespace-nowrap text-primary-foreground uppercase shadow-[0_0_24px_-8px_oklch(0.85_0.13_200/70%)] transition-transform hover:scale-105 sm:px-3 sm:text-xs"
             >
               <Zap className="h-3.5 w-3.5" />
               Order Now
