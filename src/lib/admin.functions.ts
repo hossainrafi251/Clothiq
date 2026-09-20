@@ -200,6 +200,7 @@ const productSchema = z.object({
   title: z.string().trim().min(1).max(200),
   price: z.number().min(0).max(10_000_000),
   image_url: z.string().trim().max(1000),
+  video_url: z.string().trim().max(1000).default(""),
   description: z.string().trim().max(2000),
   offer_note: z.string().trim().max(300),
   category: z.string().trim().min(1).max(60),
