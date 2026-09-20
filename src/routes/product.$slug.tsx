@@ -155,16 +155,69 @@ function ProductDetail({
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-2">
-        <div className="overflow-hidden rounded-2xl border border-border bg-card">
-          <img
-            key={shownImage}
-            src={shownImage}
-            alt={activeVariant ? `${product.name} — ${activeVariant.name}` : product.name}
-            width={1024}
-            height={1024}
-            className="aspect-square w-full object-cover"
-          />
+        <div className="space-y-3">
+          <div className="overflow-hidden rounded-2xl border border-border bg-card">
+            {view === "video" && product.video ? (
+              <video
+                key={product.video}
+                src={product.video}
+                controls
+                playsInline
+                autoPlay
+                muted
+                loop
+                preload="metadata"
+                poster={shownImage}
+                className="aspect-square w-full bg-black object-contain"
+              />
+            ) : (
+              <img
+                key={shownImage}
+                src={shownImage}
+                alt={activeVariant ? `${product.name} — ${activeVariant.name}` : product.name}
+                width={1024}
+                height={1024}
+                className="aspect-square w-full object-cover"
+              />
+            )}
+          </div>
+
+          {product.video && (
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setView("image")}
+                aria-label="Show product photo"
+                className={`relative h-20 w-20 overflow-hidden rounded-xl border-2 transition ${
+                  view === "image" ? "border-accent" : "border-border hover:border-accent/60"
+                }`}
+              >
+                <img src={shownImage} alt="" className="h-full w-full object-cover" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setView("video")}
+                aria-label="Play product video"
+                className={`relative h-20 w-20 overflow-hidden rounded-xl border-2 transition ${
+                  view === "video" ? "border-accent" : "border-border hover:border-accent/60"
+                }`}
+              >
+                <video
+                  src={product.video}
+                  muted
+                  playsInline
+                  preload="metadata"
+                  poster={shownImage}
+                  className="h-full w-full bg-black object-cover"
+                />
+                <span className="absolute inset-0 flex items-center justify-center bg-black/35">
+                  <Play className="h-6 w-6 text-white" />
+                </span>
+              </button>
+            </div>
+          )}
         </div>
+
 
         <div>
           <p className="text-[11px] font-semibold tracking-[0.2em] text-accent uppercase">
