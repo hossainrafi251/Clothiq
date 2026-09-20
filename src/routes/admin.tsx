@@ -991,7 +991,12 @@ function AdminPage() {
                     <div className="mt-2 flex gap-2">
                       <button
                         onClick={() =>
-                          setDraft({ ...p, tag: p.tag ?? "", offer_note: p.offer_note ?? "" })
+                          setDraft({
+                            ...p,
+                            tag: p.tag ?? "",
+                            offer_note: p.offer_note ?? "",
+                            video_url: p.video_url ?? "",
+                          })
                         }
                         className="rounded-full border border-border px-3 py-1 text-[11px] font-bold uppercase hover:text-primary"
                       >
