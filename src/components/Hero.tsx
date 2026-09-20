@@ -85,10 +85,6 @@ export function Hero({ settings = {} }: HeroProps) {
               className="h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
-            <div className="absolute bottom-5 left-5 rounded-xl border border-border bg-background/80 px-5 py-3 backdrop-blur-md">
-              <p className="text-xs tracking-[0.2em] text-gold uppercase">Signature Piece</p>
-              <p className="font-display text-sm font-bold">Aurelius Gold Chronograph — ৳12,500</p>
-            </div>
           </div>
         </div>
       </div>
