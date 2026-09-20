@@ -123,7 +123,6 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
         orderId: result.orderNumber,
         eventId: result.metaEventId,
         userData: {
-          ...(email.trim() ? { email: email.trim() } : {}),
           phone: phone.trim(),
           firstName: nameParts[0] ?? "",
           ...(nameParts.length > 1 ? { lastName: nameParts[nameParts.length - 1] ?? "" } : {}),
