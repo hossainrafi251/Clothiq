@@ -103,7 +103,6 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
           quantity: qty,
           unitPrice: product.price,
           fullName: fullName.trim(),
-          email: email.trim(),
           phone: phone.trim(),
           district,
           thana,
