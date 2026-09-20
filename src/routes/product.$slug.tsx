@@ -133,6 +133,7 @@ function ProductDetail({
   const variants = (product.colorVariants ?? []).filter((v) => v.name);
   const [selected, setSelected] = useState(variants[0]?.name ?? "");
   const [ordering, setOrdering] = useState(false);
+  const [view, setView] = useState<"image" | "video">("image");
   const activeVariant = variants.find((v) => v.name === selected);
   const shownImage = activeVariant?.image || product.image;
 
