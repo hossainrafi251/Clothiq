@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Star, Zap, ShoppingBag } from "lucide-react";
+import { Star, Zap, ShoppingBag, Play } from "lucide-react";
 import { CartProvider, useCart } from "../lib/cart";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
