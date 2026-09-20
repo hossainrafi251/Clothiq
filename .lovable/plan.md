@@ -1,16 +1,15 @@
-# Dark Sky-Blue Palette Refresh
+# Bilingual Checkout Locations
 
 ## Goal
-Refresh only the site colors while preserving every existing font, size, spacing, and layout choice.
+Show English and Bengali names together for every district and thana/upazila option while preserving the existing clean English values saved with orders.
 
 ## Changes
-- Deepen the background and surfaces to a clean black/near-black theme.
-- Make primary foreground text crisp white.
-- Replace teal and gold accent roles with vibrant sky blue and pale white-sky tones.
-- Update existing accent gradients, highlights, borders, rings, and glow colors through the shared color system.
-- Give the optional product offer subtitle a dedicated sky-blue text treatment beneath the title.
+- Add Bengali display-name mappings for the existing 64 districts and their thana/upazila options.
+- Keep each dropdown option value as its current English name; change only the visible label to `English (বাংলা)`.
+- Add bilingual placeholder labels for the district and thana/upazila selectors.
+- Leave delivery-price logic, validation, saved orders, Meta matching, and checkout flow unchanged.
 
 ## Validation
-- Confirm no font-family or structural markup changes.
-- Review the home and product pages visually.
+- Verify selecting a bilingual option still submits the original English district and thana values.
+- Check dependent thana options update after changing district.
 - Confirm the project builds successfully.
