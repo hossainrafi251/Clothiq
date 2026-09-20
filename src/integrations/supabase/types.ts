@@ -215,6 +215,7 @@ export type Database = {
           description: string
           id: string
           image_url: string
+          offer_note: string
           price: number
           rating: number
           reviews: number
@@ -232,6 +233,7 @@ export type Database = {
           description?: string
           id?: string
           image_url?: string
+          offer_note?: string
           price?: number
           rating?: number
           reviews?: number
@@ -249,6 +251,7 @@ export type Database = {
           description?: string
           id?: string
           image_url?: string
+          offer_note?: string
           price?: number
           rating?: number
           reviews?: number

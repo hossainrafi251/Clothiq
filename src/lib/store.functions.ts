@@ -20,6 +20,7 @@ export interface DbProduct {
   price: number;
   image_url: string;
   description: string;
+  offer_note: string;
   category: string;
   stock: number;
   tag: string | null;
@@ -63,7 +64,7 @@ function publicClient() {
 }
 
 const PRODUCT_COLUMNS =
-  "id,slug,title,price,image_url,description,category,stock,tag,rating,reviews,sort_order,color_variants";
+  "id,slug,title,price,image_url,description,offer_note,category,stock,tag,rating,reviews,sort_order,color_variants";
 
 function normalizeProduct(p: Record<string, unknown>): DbProduct {
   return {
