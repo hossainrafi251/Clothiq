@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import type { Product } from "../lib/products";
 import { bdt, DELIVERY_INSIDE_DHAKA, DELIVERY_OUTSIDE_DHAKA } from "../lib/currency";
-import { DISTRICTS, DISTRICT_NAMES } from "../lib/bd-locations";
+import { DISTRICTS, DISTRICT_NAMES, districtLabel, thanaLabel } from "../lib/bd-locations";
 import { placeOrder, trackIncompleteCheckout } from "../lib/store.functions";
 import { setMetaUserData, trackMetaEvent } from "../lib/meta-pixel";
 
@@ -300,9 +300,9 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
                     onChange={(e) => { setDistrict(e.target.value); setThana(""); }}
                     className="rounded-lg border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-primary"
                   >
-                    <option value="">Select District</option>
+                    <option value="">Select District / জেলা নির্বাচন করুন</option>
                     {DISTRICT_NAMES.map((d) => (
-                      <option key={d} value={d}>{d}</option>
+                      <option key={d} value={d}>{districtLabel(d)}</option>
                     ))}
                   </select>
                 </div>
@@ -315,9 +315,13 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
                     onChange={(e) => setThana(e.target.value)}
                     className="rounded-lg border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-primary disabled:opacity-50"
                   >
-                    <option value="">{district ? "Select Thana / Upazila" : "Select a district first"}</option>
+                    <option value="">
+                      {district
+                        ? "Select Thana / Upazila / থানা বা উপজেলা নির্বাচন করুন"
+                        : "Select a district first / আগে জেলা নির্বাচন করুন"}
+                    </option>
                     {thanas.map((t) => (
-                      <option key={t} value={t}>{t}</option>
+                      <option key={t} value={t}>{thanaLabel(district, t)}</option>
                     ))}
                   </select>
                 </div>
