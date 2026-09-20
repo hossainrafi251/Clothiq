@@ -57,31 +57,11 @@ async function currentUser(): Promise<AuthResult> {
 const denied = { ok: false as const, unauthorized: true as const };
 const granted = { ok: true as const, unauthorized: false as const };
 
-/**
- * Returns whether the signed-in user may use the admin panel.
- * The first ever signed-up user is promoted to admin automatically so the
- * panel is never locked out; afterwards only existing admins pass.
- */
+/** Returns whether the signed-in user already holds the administrator role. */
 export const adminStatus = createServerFn({ method: "GET" }).handler(async () => {
   const user = await currentUser();
   if (!user) return { signedIn: false, isAdmin: false };
-  if (user.isAdmin) return { signedIn: true, isAdmin: true };
-
-  try {
-    const sb = await admin();
-    const { count } = await sb
-      .from("user_roles")
-      .select("id", { count: "exact", head: true })
-      .eq("role", "admin");
-    if ((count ?? 0) === 0) {
-      const { error } = await sb.from("user_roles").insert({ user_id: user.userId, role: "admin" });
-      if (!error) return { signedIn: true, isAdmin: true };
-    }
-  } catch (error) {
-    console.error("[admin] bootstrap failed", error);
-  }
-
-  return { signedIn: true, isAdmin: false };
+  return { signedIn: true, isAdmin: user.isAdmin };
 });
 
 export const adminGetData = createServerFn({ method: "GET" }).handler(async () => {

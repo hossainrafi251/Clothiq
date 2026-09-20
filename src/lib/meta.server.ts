@@ -4,6 +4,8 @@
  * Meta can tie them back to the original Purchase event.
  */
 
+import { getRequest } from "@tanstack/react-start/server";
+
 async function sha256(value: string): Promise<string> {
   const bytes = new TextEncoder().encode(value.trim().toLowerCase());
   const digest = await crypto.subtle.digest("SHA-256", bytes);
@@ -19,6 +21,97 @@ function normalizePhone(phone: string): string {
   if (digits.startsWith("0")) return `880${digits.slice(1)}`;
   if (digits.startsWith("1")) return `880${digits}`;
   return digits;
+}
+
+export interface VerifiedPurchaseInput {
+  eventId: string;
+  orderId: string;
+  value: number;
+  productId: string;
+  productTitle: string;
+  quantity: number;
+  unitPrice: number;
+  fullName: string;
+  email?: string;
+  phone: string;
+  city: string;
+}
+
+/** Sends Purchase only from server-verified product and order data. */
+export async function sendMetaPurchase(
+  input: VerifiedPurchaseInput,
+): Promise<{ ok: boolean; skipped: boolean }> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: meta } = await supabaseAdmin
+      .from("meta_settings")
+      .select("pixel_id,access_token,test_event_code")
+      .eq("id", 1)
+      .maybeSingle();
+
+    if (!meta?.pixel_id || !meta.access_token) return { ok: false, skipped: true };
+
+    const request = getRequest();
+    const ip =
+      request?.headers.get("cf-connecting-ip") ??
+      request?.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+    const userAgent = request?.headers.get("user-agent") ?? undefined;
+    const userData: Record<string, unknown> = {};
+    if (ip) userData["client_ip_address"] = ip;
+    if (userAgent) userData["client_user_agent"] = userAgent;
+
+    const phone = normalizePhone(input.phone);
+    if (phone) userData["ph"] = [await sha256(phone)];
+    if (input.email) userData["em"] = [await sha256(input.email)];
+    const parts = input.fullName.trim().split(/\s+/).filter(Boolean);
+    if (parts[0]) userData["fn"] = [await sha256(parts[0])];
+    if (parts.length > 1) userData["ln"] = [await sha256(parts[parts.length - 1]!)];
+    if (input.city) userData["ct"] = [await sha256(input.city.replace(/\s+/g, ""))];
+    userData["country"] = [await sha256("bd")];
+    userData["external_id"] = [await sha256(phone || input.orderId)];
+
+    const payload: Record<string, unknown> = {
+      data: [
+        {
+          event_name: "Purchase",
+          event_id: input.eventId,
+          event_time: Math.floor(Date.now() / 1000),
+          action_source: "website",
+          user_data: userData,
+          custom_data: {
+            order_id: input.orderId,
+            value: input.value,
+            currency: "BDT",
+            content_ids: [input.productId],
+            content_name: input.productTitle,
+            content_type: "product",
+            contents: [
+              { id: input.productId, quantity: input.quantity, item_price: input.unitPrice },
+            ],
+            num_items: input.quantity,
+          },
+        },
+      ],
+    };
+    if (meta.test_event_code) payload["test_event_code"] = meta.test_event_code;
+
+    const response = await fetch(
+      `https://graph.facebook.com/v19.0/${meta.pixel_id}/events?access_token=${encodeURIComponent(meta.access_token)}`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+    );
+    if (!response.ok) {
+      console.error("[meta] verified Purchase rejected", response.status);
+      return { ok: false, skipped: false };
+    }
+    return { ok: true, skipped: false };
+  } catch (error) {
+    console.error("[meta] verified Purchase failed", error);
+    return { ok: false, skipped: false };
+  }
 }
 
 export interface NegativeFeedbackInput {

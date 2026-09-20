@@ -104,6 +104,7 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
           quantity: qty,
           unitPrice: product.price,
           fullName: fullName.trim(),
+          email: email.trim(),
           phone: phone.trim(),
           district,
           thana,
@@ -122,6 +123,7 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
         contents: [{ id: product.id, quantity: qty, itemPrice: product.price }],
         numItems: qty,
         orderId: result.orderNumber,
+        eventId: result.metaEventId,
         userData: {
           ...(email.trim() ? { email: email.trim() } : {}),
           phone: phone.trim(),
