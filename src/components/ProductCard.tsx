@@ -73,7 +73,7 @@ export function ProductCard({ product, onOrder }: Props) {
         </div>
 
         {variants.length > 0 && (
-          <div className="mt-3 min-w-0">
+          <div className="mt-3 hidden min-w-0 sm:block">
             <p className="text-[10px] font-semibold tracking-[0.2em] text-muted-foreground uppercase">
               Color: <span className="text-foreground">{selected}</span>
             </p>
