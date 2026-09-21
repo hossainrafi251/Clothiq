@@ -79,7 +79,7 @@ function CategoryPage() {
               No products in this collection yet. Please check back soon.
             </p>
           ) : (
-            <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+            <div className="mt-10 grid grid-cols-3 gap-2 sm:gap-5 lg:grid-cols-4">
               {products.map((p) => (
                 <ProductCard
                   key={p.id}
