@@ -109,7 +109,7 @@ export function ProductCard({ product, onOrder }: Props) {
                   contentName: product.name,
                 });
               }}
-              className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full border border-border px-2 py-2.5 text-[10px] font-bold tracking-wide whitespace-nowrap text-foreground uppercase transition-colors hover:border-primary hover:text-primary sm:px-3 sm:text-xs"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full border border-border px-2 py-2.5 text-[10px] font-bold tracking-wide whitespace-nowrap text-foreground uppercase transition-colors hover:border-primary hover:text-primary sm:px-3 sm:text-xs md:w-auto md:flex-1"
             >
               <ShoppingBag className="h-3.5 w-3.5" />
               Add to Cart
@@ -123,7 +123,7 @@ export function ProductCard({ product, onOrder }: Props) {
                   contentName: product.name,
                 });
               }}
-              className="bg-gradient-teal inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full px-2 py-2.5 text-[10px] font-bold tracking-wide whitespace-nowrap text-primary-foreground uppercase shadow-[0_0_24px_-8px_oklch(0.85_0.13_200/70%)] transition-transform hover:scale-105 sm:px-3 sm:text-xs"
+              className="bg-gradient-teal inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full px-2 py-2.5 text-[10px] font-bold tracking-wide whitespace-nowrap text-primary-foreground uppercase shadow-[0_0_24px_-8px_oklch(0.85_0.13_200/70%)] transition-transform hover:scale-105 sm:px-3 sm:text-xs md:w-auto md:flex-1"
             >
               <Zap className="h-3.5 w-3.5" />
               Order Now
