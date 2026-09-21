@@ -21,7 +21,7 @@ export function ProductCard({ product, onOrder }: Props) {
   const shownImage = activeVariant?.image || product.image;
 
   return (
-    <article className="card-sheen group flex flex-col overflow-hidden rounded-2xl border border-border bg-card">
+    <article className="card-sheen group flex flex-col rounded-2xl border border-border bg-card">
       <div className="relative overflow-hidden">
         <Link to="/product/$slug" params={{ slug }}>
           <img
@@ -47,7 +47,7 @@ export function ProductCard({ product, onOrder }: Props) {
         </button>
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col p-3 sm:p-5">
+      <div className="flex min-w-0 flex-1 flex-col p-3 pb-4 sm:p-5 sm:pb-6">
         <p className="truncate text-[9px] font-semibold tracking-[0.16em] text-accent uppercase sm:text-[11px] sm:tracking-[0.2em]">{product.category}</p>
         <Link to="/product/$slug" params={{ slug }}>
           <h3 className="font-display mt-1.5 line-clamp-2 min-h-10 text-sm leading-5 font-bold transition-colors hover:text-gold sm:min-h-0 sm:text-base sm:leading-snug">
@@ -73,7 +73,7 @@ export function ProductCard({ product, onOrder }: Props) {
         </div>
 
         {variants.length > 0 && (
-          <div className="mt-3 min-w-0">
+          <div className="mt-3 hidden min-w-0 sm:block">
             <p className="text-[10px] font-semibold tracking-[0.2em] text-muted-foreground uppercase">
               Color: <span className="text-foreground">{selected}</span>
             </p>
@@ -99,7 +99,7 @@ export function ProductCard({ product, onOrder }: Props) {
 
         <div className="mt-4 pt-2">
           <p className="font-display text-base font-bold text-gold sm:text-lg">{bdt(product.price)}</p>
-          <div className="mt-3 flex flex-col gap-2 md:flex-row">
+          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
             <button
               onClick={() => {
                 addItem({ ...product, image: shownImage });
@@ -123,7 +123,7 @@ export function ProductCard({ product, onOrder }: Props) {
                   contentName: product.name,
                 });
               }}
-              className="bg-gradient-teal inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full px-2 py-2.5 text-[10px] font-bold tracking-wide whitespace-nowrap text-primary-foreground uppercase shadow-[0_0_24px_-8px_oklch(0.85_0.13_200/70%)] transition-transform hover:scale-105 sm:px-3 sm:text-xs"
+              className="bg-gradient-teal inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full px-2 py-2.5 text-[10px] font-bold tracking-wide whitespace-nowrap text-primary-foreground uppercase shadow-[0_0_16px_-6px_oklch(0.85_0.13_200/70%)] transition-transform hover:scale-105 sm:px-3 sm:text-xs"
             >
               <Zap className="h-3.5 w-3.5" />
               Order Now
