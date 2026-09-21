@@ -47,7 +47,7 @@ export function ProductCard({ product, onOrder }: Props) {
         </button>
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col p-3 sm:p-5">
+      <div className="flex min-w-0 flex-1 flex-col p-3 pb-4 sm:p-5 sm:pb-6">
         <p className="truncate text-[9px] font-semibold tracking-[0.16em] text-accent uppercase sm:text-[11px] sm:tracking-[0.2em]">{product.category}</p>
         <Link to="/product/$slug" params={{ slug }}>
           <h3 className="font-display mt-1.5 line-clamp-2 min-h-10 text-sm leading-5 font-bold transition-colors hover:text-gold sm:min-h-0 sm:text-base sm:leading-snug">
