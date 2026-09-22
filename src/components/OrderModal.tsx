@@ -39,8 +39,16 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const insideFee = Number(settings["delivery_inside_dhaka"] ?? DELIVERY_INSIDE_DHAKA) || DELIVERY_INSIDE_DHAKA;
-  const outsideFee = Number(settings["delivery_outside_dhaka"] ?? DELIVERY_OUTSIDE_DHAKA) || DELIVERY_OUTSIDE_DHAKA;
+  // A configured fee of 0 is valid, so only fall back when the value is blank
+  // or not a number.
+  const feeFromSettings = (key: string, fallback: number) => {
+    const raw = settings[key];
+    if (raw === undefined || String(raw).trim() === "") return fallback;
+    const n = Number(raw);
+    return Number.isFinite(n) && n >= 0 ? n : fallback;
+  };
+  const insideFee = feeFromSettings("delivery_inside_dhaka", DELIVERY_INSIDE_DHAKA);
+  const outsideFee = feeFromSettings("delivery_outside_dhaka", DELIVERY_OUTSIDE_DHAKA);
 
   const thanas = district ? DISTRICTS[district] ?? [] : [];
   const subtotal = product.price * qty;
