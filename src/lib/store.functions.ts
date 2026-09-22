@@ -209,9 +209,16 @@ export const placeOrder = createServerFn({ method: "POST" })
       .from("site_settings")
       .select("key,value")
       .in("key", ["delivery_inside_dhaka", "delivery_outside_dhaka"]);
-    const fees = Object.fromEntries((feeRows ?? []).map((r) => [r.key, Number(r.value)]));
-    const inside = Number.isFinite(fees["delivery_inside_dhaka"]) ? fees["delivery_inside_dhaka"]! : 80;
-    const outside = Number.isFinite(fees["delivery_outside_dhaka"]) ? fees["delivery_outside_dhaka"]! : 150;
+    const fees = Object.fromEntries((feeRows ?? []).map((r) => [r.key, r.value]));
+    // A configured fee of 0 is valid; only fall back on blank/invalid values.
+    const fee = (key: string, fallback: number) => {
+      const raw = fees[key];
+      if (raw === undefined || String(raw).trim() === "") return fallback;
+      const n = Number(raw);
+      return Number.isFinite(n) && n >= 0 ? n : fallback;
+    };
+    const inside = fee("delivery_inside_dhaka", 80);
+    const outside = fee("delivery_outside_dhaka", 150);
     const deliveryFee = data.district === "Dhaka" ? inside : outside;
     const total = unitPrice * data.quantity + deliveryFee;
 
