@@ -93,6 +93,9 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Re-entry guard: ignore duplicate submits triggered while a request is
+    // already in flight (double-click, Enter key, etc.).
+    if (saving || placed) return;
     if (!fullName.trim() || fullName.trim().length > 100) return setError("Please enter your full name.");
     if (!/^01[3-9]\d{8}$/.test(phone.trim()))
       return setError("Please enter a valid 11-digit Bangladeshi phone number (e.g. 01712345678).");
@@ -355,9 +358,21 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
 
               <button
                 type="submit"
-                className="bg-gradient-teal w-full rounded-full py-3.5 text-sm font-bold tracking-widest text-primary-foreground uppercase shadow-[0_0_30px_-8px_oklch(0.85_0.13_200/60%)] transition-transform hover:scale-[1.02]"
+                disabled={saving}
+                aria-busy={saving}
+                className="bg-gradient-teal flex w-full items-center justify-center gap-2 rounded-full py-3.5 text-sm font-bold tracking-widest text-primary-foreground uppercase shadow-[0_0_30px_-8px_oklch(0.85_0.13_200/60%)] transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:scale-100"
               >
-                Confirm Order
+                {saving ? (
+                  <>
+                    <span
+                      aria-hidden="true"
+                      className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+                    />
+                    Placing Order...
+                  </>
+                ) : (
+                  "Confirm Order"
+                )}
               </button>
             </form>
           </>
