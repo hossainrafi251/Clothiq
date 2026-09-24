@@ -36,6 +36,13 @@
       "when": 1789921478157,
       "tag": "0004_restrict_site_settings_and_user_roles_writes",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790289105305,
+      "tag": "0005_tighten_products_and_storage_policies",
+      "breakpoints": true
     }
   ]
 }
