@@ -110,6 +110,42 @@ export function loadMetaPixel(pixelId: string): void {
   else window.fbq?.("init", pixelId);
 }
 
+function readCookie(name: string): string {
+  if (typeof document === "undefined") return "";
+  const m = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return m ? decodeURIComponent(m[1]!) : "";
+}
+
+const FBC_STORE = "clothiq_fbc";
+
+/** Captures fbclid from the landing URL so fbc survives navigation. */
+export function captureFbclid(): void {
+  if (typeof window === "undefined") return;
+  const fbclid = new URLSearchParams(window.location.search).get("fbclid");
+  if (!fbclid) return;
+  const fbc = `fb.1.${Date.now()}.${fbclid}`;
+  try {
+    localStorage.setItem(FBC_STORE, fbc);
+  } catch {}
+  if (!readCookie("_fbc")) {
+    document.cookie = `_fbc=${encodeURIComponent(fbc)}; path=/; max-age=${90 * 86400}; SameSite=Lax`;
+  }
+}
+
+/** Returns Meta browser (fbp) and click (fbc) identifiers for CAPI matching. */
+export function getMetaClickIds(): { fbc?: string; fbp?: string } {
+  if (typeof window === "undefined") return {};
+  captureFbclid();
+  let fbc = readCookie("_fbc");
+  if (!fbc) {
+    try {
+      fbc = localStorage.getItem(FBC_STORE) ?? "";
+    } catch {}
+  }
+  const fbp = readCookie("_fbp");
+  return { ...(fbc ? { fbc: fbc.slice(0, 500) } : {}), ...(fbp ? { fbp: fbp.slice(0, 200) } : {}) };
+}
+
 export function newEventId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
   return `evt-${Date.now()}-${Math.random().toString(36).slice(2)}`;

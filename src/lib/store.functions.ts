@@ -184,6 +184,8 @@ const orderSchema = z.object({
   district: z.string().trim().min(1).max(60),
   thana: z.string().trim().min(1).max(80),
   address: z.string().trim().min(1).max(300),
+  fbc: z.string().trim().max(500).regex(/^fb\.\d\.\d+\..+$/).optional().catch(undefined),
+  fbp: z.string().trim().max(200).regex(/^fb\.\d\.\d+\..+$/).optional().catch(undefined),
 });
 
 export const placeOrder = createServerFn({ method: "POST" })
@@ -260,7 +262,10 @@ export const placeOrder = createServerFn({ method: "POST" })
         fullName: data.fullName,
         email: data.email,
         phone: data.phone,
-        city: data.district,
+        city: data.thana,
+        state: data.district,
+        fbc: data.fbc,
+        fbp: data.fbp,
       });
     } catch (metaError) {
       console.error("[store] verified purchase event failed", metaError);
