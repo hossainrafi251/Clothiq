@@ -35,7 +35,18 @@ export interface VerifiedPurchaseInput {
   email?: string;
   phone: string;
   city: string;
+  state?: string;
+  fbc?: string;
+  fbp?: string;
 }
+
+function cookieValue(header: string | null | undefined, name: string): string {
+  if (!header) return "";
+  const m = header.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
+  return m ? decodeURIComponent(m[1]!) : "";
+}
+
+const norm = (v: string) => v.trim().toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
 
 /** Sends Purchase only from server-verified product and order data. */
 export async function sendMetaPurchase(
@@ -56,17 +67,24 @@ export async function sendMetaPurchase(
       request?.headers.get("cf-connecting-ip") ??
       request?.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
     const userAgent = request?.headers.get("user-agent") ?? undefined;
+    const cookies = request?.headers.get("cookie");
     const userData: Record<string, unknown> = {};
     if (ip) userData["client_ip_address"] = ip;
     if (userAgent) userData["client_user_agent"] = userAgent;
+    const fbc = input.fbc || cookieValue(cookies, "_fbc");
+    const fbp = input.fbp || cookieValue(cookies, "_fbp");
+    // fbc/fbp are sent unhashed, per Meta's spec.
+    if (fbc) userData["fbc"] = fbc;
+    if (fbp) userData["fbp"] = fbp;
 
     const phone = normalizePhone(input.phone);
     if (phone) userData["ph"] = [await sha256(phone)];
     if (input.email) userData["em"] = [await sha256(input.email)];
     const parts = input.fullName.trim().split(/\s+/).filter(Boolean);
-    if (parts[0]) userData["fn"] = [await sha256(parts[0])];
-    if (parts.length > 1) userData["ln"] = [await sha256(parts[parts.length - 1]!)];
-    if (input.city) userData["ct"] = [await sha256(input.city.replace(/\s+/g, ""))];
+    if (parts[0]) userData["fn"] = [await sha256(norm(parts[0]))];
+    if (parts.length > 1) userData["ln"] = [await sha256(norm(parts[parts.length - 1]!))];
+    if (input.city) userData["ct"] = [await sha256(norm(input.city))];
+    if (input.state) userData["st"] = [await sha256(norm(input.state))];
     userData["country"] = [await sha256("bd")];
     userData["external_id"] = [await sha256(phone || input.orderId)];
 

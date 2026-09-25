@@ -5,6 +5,7 @@ import type { Product } from "../lib/products";
 import { bdt, DELIVERY_INSIDE_DHAKA, DELIVERY_OUTSIDE_DHAKA } from "../lib/currency";
 import { DISTRICTS, DISTRICT_NAMES, districtLabel, thanaLabel } from "../lib/bd-locations";
 import { placeOrder, trackIncompleteCheckout } from "../lib/store.functions";
+import { getMetaClickIds } from "../lib/meta-pixel";
 import { setMetaUserData, trackMetaEvent } from "../lib/meta-pixel";
 
 const DEFAULT_SIZES = ["S", "M", "L", "XL"];
@@ -118,6 +119,7 @@ export function OrderModal({ product, onClose, initialColor = "", settings = {} 
           district,
           thana,
           address: address.trim(),
+          ...getMetaClickIds(),
         },
       });
       state.current.placed = true;
