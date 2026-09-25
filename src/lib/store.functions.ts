@@ -264,8 +264,8 @@ export const placeOrder = createServerFn({ method: "POST" })
         phone: data.phone,
         city: data.thana,
         state: data.district,
-        fbc: data.fbc,
-        fbp: data.fbp,
+        ...(data.fbc ? { fbc: data.fbc } : {}),
+        ...(data.fbp ? { fbp: data.fbp } : {}),
       });
     } catch (metaError) {
       console.error("[store] verified purchase event failed", metaError);
