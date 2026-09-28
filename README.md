@@ -28,7 +28,7 @@ Hero Section:
 
 Category Section (Banners):
 
-- Grid layout showcasing main categories:
+- Grid layout showcasing   main categories:
 
   1. Men's Shirts & Pants
 
