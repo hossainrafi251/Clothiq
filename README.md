@@ -22,7 +22,7 @@ Hero Section:
 
 - Headline: "THE ESSENTIAL COLLECTION — ELEVATE YOUR VIBE".
 
-- High-quality visual showcase of men's formal/casual outfits (pants, shirts, and watches).
+- High-quality visual showcase of men's formal/  casual outfits (pants, shirts, and watches).
 
 - Strong Call-To-Action (CTA) button: "Explore Collection".
 
